@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+    <meta name="theme-color" content="#3c8dbc">
+    <meta name="msapplication-TileColor" content="#3c8dbc">
+    <meta name="msapplication-navbutton-color" content="#3c8dbc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Scouting</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+    <header class="header"><a class="header-button main-button" href="index.html">Scouting App</a><a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a><a class="header-button" href="#pane-tickets"><i class="fa fa-calendar"></i><span class="header-button-label-red">5</span></a><a class="header-button" href="#pane-user">John Doe</a>
+      <div class="header-pane-holder" id="pane-tickets"><a class="header-pane-close" href="#"></a>
+        <ul class="header-pane ticket-pane">
+          <li><a class="ticket-link" href="#"><span class="ticket-title">No notification</span><span class="ticket-description">You don`t have any notifications<br>today</span></a></li>
+        </ul>
+      </div>
+      <div class="header-pane-holder" id="pane-user"><a class="header-pane-close" href="#"></a>
+        <div class="header-pane user-pane">
+          <div class="user-background"><i class="fa fa-user user-icon"></i>User</div>
+          <div class="user-buttons"><a class="user-btn" href="#">#7033</a><a class="user-btn" href="#">Logout</a></div>
+        </div>
+      </div>
+    </header>
+    <div class="container">
+      <nav class="menu" id="menu"><a class="menu-close header-button" href="#"><i class="fa fa-bars"></i></a>
+        <form action="#">
+          <div class="search">
+            <input class="search-input" type="search" placeholder="Search...">
+            <button class="search-submit" type="submit"><i class="fa fa-search"></i></button>
+          </div>
+        </form>
+          <a class="menu-link" href="user.html"><i class="fa fa-fw fa-user"></i> User</a>
+          <a class="menu-link" href="team.html"><i class="fa fa-fw fa-users"></i> Team</a>
+          <a class="menu-link" href="evaluation.html"><i class="fa fa-fw fa-pencil"></i> Evaluation</a>
+          <a class="menu-link" href="reports.html"><i class="fa fa-fw fa-line-chart"></i> Reports</a>
+          <a class="menu-link" href="about.html"><i class="fa fa-fw fa-info"></i> About</a>          
+      </nav>
+      <main class="content">
+        <div class="row">
+          <div class="col-xs-12">
+            <h1 class="content-title"><i class="fa fa-line-chart"></i> Reports</h1>
+          </div>
+        </div>
+        
+        
+        <div class="row">
+          <div class="col-md-6">         
+            <div class="box">
+              <div class="box-header">Questions</div>
+              <div class="box-body">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <p class="title-4">Autonomus</p>
+                    <p>Left through the middle</p>
+                    <p>Left Loaded</p>
+                    <p>Crossed the auto line</p>
+                    <p class="title-4">Teleoperated</p>
+                    <p>PUs placed in the alliance switch</p>
+                    <p>PUs placed on the scale</p>
+                    <p class="title-4">Climbing</p>
+                    <p>Climbed without levitate</p>
+                    <p>Helped other robots to climb</p>
+                    <br>
+                    <a href="#modal-hidden-questions">There are 1 hidden question(s)</a>
+                    <button class="btn-green" type="button" style="position: absolute; bottom: 0px; right: 15px">Change</button>
+                  </div>
+                </div>
+              </div>
+              
+              
+            </div>
+          </div>
+          <div class="col-md-6">         
+            <div class="box">
+              <div class="box-header">Teams</div>
+              <div class="box-body">
+                <br>
+                <div class="row">
+                  <div class="col-sm-3"></div>
+                  <div class="col-sm-4 input">
+                    <input class="col-xs-8" "input" placeholder="Team number" required>
+                  </div> 
+                  <div class="col-sm-2">
+                    <button class="btn-green" type="submit"  style="margin: 0px">Add</button>
+                  </div>
+                </div>
+                <br>
+                <div class="row">                  
+                  <div class="col-sm-4">
+                    <p>
+                      <button class="btn-red btn-small fa fa-times" type="button"></button>
+                      Roosters - 7033
+                    </p>
+                  </div>
+                  <div class="col-sm-4">
+                    <p>
+                      <button class="btn-red btn-small fa fa-times" type="button"></button>
+                      Roosters - 7033
+                    </p>
+                  </div>
+                  <div class="col-sm-4">
+                    <p>
+                      <button class="btn-red btn-small fa fa-times" type="button"></button>
+                      Roosters - 7033
+                    </p>
+                  </div>
+                  <div class="col-sm-4">
+                    <p>
+                      <button class="btn-red btn-small fa fa-times" type="button"></button>
+                      Roosters - 7033
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="box">
+              <div class="box-header"></div>
+              <div class="box-body">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Team's robot</th>
+                          <th>Did parking</th>
+                          <th>Climbed without levitate</th>
+                          <th>Climbed without help</th>  
+                          <th>Switch control</th>
+                          <th>Helped other robots to climb</th>
+                          <th>Used Levitate</th>
+                          <th>Tried to climb</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>7033</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td>No</td>
+                          <td>No</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td class="text-right">
+                            <a class="user-btn btn-blue btn-small" href="#modal-full-evaluation">Full evaluation</a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>9988</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td>No</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td class="text-right">
+                            <a class="user-btn btn-blue btn-small" href="#modal-full-evaluation">Full evaluation</a>
+                          </td> 
+                        </tr>
+                        <tr>
+                          <td>8754</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                          <td>No</td>
+                          <td>No</td>
+                          <td>Yes</td>
+                          <td>No</td>
+                          <td class="text-right">
+                            <a class="user-btn btn-blue btn-small" href="#modal-full-evaluation">Full evaluation</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="9"><b>Total:</b> 3</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                    
+                    <!-- Modals -->
+                    
+                    <div class="modal" id="modal-hidden-questions">
+                      <h2 class="modal-header">Descriptive questions</h2>
+                      <div class="modal-body">                        
+                        <p>Details about how the robot climbed</p>
+                        <p><i>(These questions can be viewed through the "Full Evaluation" option in the table).</i></p>
+                      </div>
+                      <div class="modal-footer text-right"><a class="btn-red" href="#">Close</a></div>
+                    </div><a class="modal-close" href="#"></a>   
+                    
+                    <div class="modal" id="modal-full-evaluation">
+                      <h2 class="modal-header">Full evaluation of team 7033 robot</h2>
+                      <div class="modal-body">                        
+                        
+                        <p class="title-4">Last update</p>
+                        <p>2018-2-4</p>
+                        
+                        <br>
+                        <p class="title-4">Answers</p>
+                        <p><b>Did parking?</b></p>
+                        <p>Yes</p>
+                        <br>
+                        <p><b>How the robot tried to climb?</b></p>
+                        <p>The robot tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb 
+                        while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb </p>
+                        <br>
+                        <p><b>Did parking?</b></p>
+                        <p>Yes</p>
+                        <br>
+                        <p><b>How the robot tried to climb?</b></p>
+                        <p>The robot tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb 
+                        while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb </p>
+
+                        
+                      </div>
+                      <div class="modal-footer text-right"><a class="btn-red" href="#">Close</a></div>
+                    </div>
+                    <a class="modal-close" href="#"></a>   
+                  </div>
+                </div>
+              </div>
+            </div>            
+          </div>
+        </div>
+        
+      </main>
+    </div>
+  </body>
+</html>
