@@ -98,6 +98,7 @@
             font-weight: normal;
         }
 	</style>
+    <script src="js/main.js"></script>
 </head>
 <body>
 	<div class="row">
@@ -107,13 +108,36 @@
 		<div class="box">
 			<div class="login-triangle"></div>
 			<h1 class="login-header">Log in</h1>
-			<form class="login-container" autocomplete="off">
+			<form class="login-container" autocomplete="off" onsubmit="login(event)">
 				<input type="email" name="email" id="email" required placeholder="Email" autofocus>
 				<input type="password" name="password" id="password" required placeholder="Password">
 				<button type="submit">Enter</button>
 				<a href="#">Forgot my password</a>
 			</form>
 		</div>
-	</div>
+    </div>
+    <script>
+		function login(event) {
+			event.preventDefault();
+			var data = {
+				email: document.getElementById('email').value,
+				password: document.getElementById('password').value
+			}
+			
+			api_request('auth', 'POST', data).then(function(response) {
+				return response.json();
+			}).then(function(response) {
+				if (response.error_code) {
+					alert('User not found. Try again');
+					return;
+				}
+				
+				window.localStorage.setItem('token', response.token);
+				window.localStorage.setItem('user_id', response.user_id);
+				window.localStorage.setItem('token_expiration', Date.now() + 43200);
+				location.href = app_url;
+			});
+		}
+    </script>
 </body>
 </html>
