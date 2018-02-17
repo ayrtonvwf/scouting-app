@@ -6,8 +6,6 @@ function login(event) {
     }
     
     api_request('auth', 'POST', data).then(function(response) {
-        return response.json();
-    }).then(function(response) {
         if (response.error_code) {
             alert('User not found. Try again');
             return;

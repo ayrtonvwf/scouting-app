@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/main.js"></script>
+    <script src="js/user.js"></script>
   </head>
   <body>
     <header class="header">
       <a class="header-button main-button" href="index.html">Scouting App</a>
       <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
+      <div class="header-button" id="loading_status" hidden><i class="fa fa-fw fa-spin fa-refresh"></i></div>
       <a class="header-button" href="#pane-tickets"><i class="fa fa-calendar"></i><span class="header-button-label-red">5</span></a>
       <a class="header-button fill-user_name" href="#pane-user"></a>
       <div class="header-pane-holder" id="pane-tickets">
@@ -40,6 +42,7 @@
           </div>
           <div class="user-buttons">
             <a class="user-btn" href="#">#<span class="fill-team_number"></span></a>
+            <a class="user-btn" href="#" onclick="logout()">Log out</a>
           </div>
         </div>
       </div>
@@ -53,7 +56,7 @@
             <button class="search-submit" type="submit"><i class="fa fa-search"></i></button>
           </div>
         </form>
-        <a class="menu-link" href="user.html"><i class="fa fa-fw fa-user"></i> User</a>
+        <a class="menu-link menu-active" href="user.html"><i class="fa fa-fw fa-user"></i> User</a>
         <a class="menu-link" href="team.html"><i class="fa fa-fw fa-users"></i> Team</a>
         <a class="menu-link" href="evaluation.html"><i class="fa fa-fw fa-pencil"></i> Evaluation</a>
         <a class="menu-link" href="reports.html"><i class="fa fa-fw fa-line-chart"></i> Reports</a>
@@ -67,31 +70,34 @@
         </div>
         
         <div class="row">
-          
           <div class="col-md-6">
             <div class="box">
               <div class="box-header">Information</div>
               <div class="box-body">
-                <form>
+                <form onsubmit="user_submit(event)">
                   <div class="row">
                     <div class="col-xs-6 input">
-                      <input id="input" placeholder="Name" required>
-                      <label for="input">Name</label>
+                      <input id="input-user_name" placeholder="Name" required>
+                      <label for="input-user_name">Name</label>
                     </div>  
                     <div class="col-xs-6 input">
-                      <input id="input" placeholder="Email" required type="email">
-                      <label for="input">Email</label>
+                      <input id="input-user_email" placeholder="Email" required type="email">
+                      <label for="input-user_email">Email</label>
                     </div>  
                   </div>
                   <div class="row">
                     <div class="col-xs-6 input">
-                      <input id="input" placeholder="Enter a new password" type="password">
-                      <label for="input">New password</label>
+                      <input id="input-user_new_password" placeholder="If you want to change it..." type="password">
+                      <label for="input-user_new_password">New password</label>
                     </div>    
                     <div class="col-xs-6 input">
-                      <input id="input" placeholder="Password" required type="password">
-                      <label for="input">Password</label>
-                    </div>  
+                      <input id="input-user_re_password" placeholder="Repeat the new password" type="password">
+                      <label for="input-user_re_password">New password again</label>
+                    </div>    
+                    <div class="col-xs-6 input">
+                      <input id="input-user_password" placeholder="Just for safety..." required type="password">
+                      <label for="input-user_password">Current password</label>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="col-xs-12 text-right">
@@ -109,6 +115,19 @@
             <div class="box-body">
               <div class="row">
                 <div class="col-sm-12">
+                  <form onsubmit="join_team(event)">
+                    <br>
+                    <div class="row">
+                      <div class="col-sm-3"></div>
+                      <div class="col-sm-4 input">
+                        <input class="col-xs-8" "input" placeholder="Team number" required id="user-join_team_number">
+                      </div> 
+                      <div class="col-sm-2">
+                        <button class="btn-green" type="submit" style="margin: 0px">Join</button>
+                      </div>
+                    </div>
+                    <br>
+                  </form>
                   <table class="table">
                     <thead>
                       <tr>
@@ -117,21 +136,22 @@
                         <th>&nbsp;</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <template id="template-user_team">
                       <tr>
-                        <td>Roosters</td>
-                        <td>7033</td>
-                        <td class="text-right"><a class="btn btn-small btn-red tooltip" href="#" title="Excluir"><i class="fa fa-fw fa-trash"></i></a></td>
+                        <td class="fill-user_team_name"></td>
+                        <td class="fill-user_team_number"></td>
+                        <td class="text-right">
+                          <button class="btn btn-small btn-red tooltip tooltip-left user_team_leave_button" title="Leave">
+                            <i class="fa fa-fw fa-times"></i>
+                          </button>
+                        </td>
                       </tr>
-                      <tr>
-                        <td>Penguins</td>
-                        <td>9999</td>
-                        <td class="text-right"><a class="btn btn-small btn-red tooltip" href="#" title="Excluir"><i class="fa fa-fw fa-trash"></i></a></td>
-                      </tr>
+                    </template>
+                    <tbody class="fill-user_teams">
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colspan="3"><b>Total:</b> 2</td>
+                        <td colspan="3"><b>Total:</b> <span class="row-counter"></span></td>
                       </tr>
                     </tfoot>
                   </table>

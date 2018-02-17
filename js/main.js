@@ -7,6 +7,7 @@ var current_team;
 const db_name = 'scoutingdb';
 
 window.onload = function () {
+    showLoading();
     if (isOnLoginPage()) {
         return;
     }
@@ -14,6 +15,11 @@ window.onload = function () {
 
     dbInit().then(function() {
         loadLayoutData();
+    }).then(function() {
+        if (typeof page_default_function === "function") {
+            page_default_function();
+        }
+        hideLoading();
     });
 }
 
@@ -25,6 +31,9 @@ function loadLayoutData() {
         }
     }).then(function() {
         getCurrentTeam().then(function(team) {
+            if (!team) {
+                return;
+            }
             var elements = document.getElementsByClassName('fill-team_number');
             for (i = 0; i < elements.length; i++) {
                 elements[i].innerHTML = team.number;
@@ -51,9 +60,9 @@ function dbInit() {
     });
 }
 
-function getCurrentUser() {
+function getCurrentUser(force_refresh) {
     return new Promise(function(resolve, reject) {
-        if (current_user) {
+        if (current_user && !force_refresh) {
             resolve(current_user);
             return;
         }
@@ -63,19 +72,17 @@ function getCurrentUser() {
         var store = transaction.objectStore('User');
         var getUser = store.get(user_id);
         getUser.onsuccess = function() {
-            if (getUser.result) {
+            if (getUser.result && !force_refresh) {
                 current_user = getUser.result;
                 resolve(current_user);
             }
             
             return api_request('user', 'GET', {id: user_id}).then(function(response) {
-                return response.json();
-            }).then(function(response) {
                 current_user = response.result[0];
                 transaction = db.transaction('User', 'readwrite');
                 store = transaction.objectStore('User');
                 store.put(current_user);
-                if (!getUser.result) {
+                if (!getUser.result || force_refresh) {
                     resolve(current_user);
                 }
             });
@@ -83,14 +90,14 @@ function getCurrentUser() {
     });
 }
 
-function getCurrentTeam() {
+function getCurrentTeam(force_refresh) {
     return new Promise(function(resolve, reject) {
-        if (current_team) {
+        if (current_team && !force_refresh) {
             resolve(current_team);
             return;
         }
 
-        getCurrentUser().then(function(user) {
+        getCurrentUser(force_refresh).then(function(user) {
             if (team_id = localStorage.getItem('team_id')) {
                 current_team = user.teams.filter(function(team) {
                     return team.id == team_id;
@@ -99,7 +106,9 @@ function getCurrentTeam() {
                 current_team = user.teams[0];
             }
             resolve(current_team);
-            localStorage.setItem('team_id', current_team.id);
+            if (current_team) {
+                localStorage.setItem('team_id', current_team.id);
+            }
         });
     });
 }
@@ -130,7 +139,10 @@ function isLoggedIn() {
     return true;
 }
 
-function api_request(url, method, data) {
+function api_request(url, method, data, parsejson) {
+    if (parsejson == undefined) {
+        parsejson = true;
+    }
     var request_url = api_url + '/' + url;
     var request_init = {
         method: method,
@@ -145,8 +157,13 @@ function api_request(url, method, data) {
     }
 
     var request = new Request(request_url, request_init);
-    
-    return fetch(request);
+    if (parsejson) {
+        return fetch(request).then(function(response) {
+            return response.json();
+        });
+    } else {
+        return fetch(request);
+    }
 }
 
 function serializeQueryString(json) {
@@ -166,4 +183,12 @@ function logout() {
     db_delete.onsuccess = function(event) {
         location.href = app_url + '/login.html';
     };
+}
+
+function showLoading() {
+    document.getElementById('loading_status').removeAttribute('hidden');
+}
+
+function hideLoading() {
+    document.getElementById('loading_status').setAttribute('hidden', '');
 }
