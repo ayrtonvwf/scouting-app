@@ -7,10 +7,12 @@ var current_team;
 const db_name = 'scoutingdb';
 
 window.onload = function () {
-    showLoading();
+    registerServiceWorker();
+
     if (isOnLoginPage()) {
         return;
     }
+    showLoading();
     requestLogin();
 
     dbInit().then(function() {
@@ -21,6 +23,10 @@ window.onload = function () {
         }
         hideLoading();
     });
+}
+
+function registerServiceWorker() {
+    navigator.serviceWorker.register('service_worker.js');
 }
 
 function loadLayoutData() {
