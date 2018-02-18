@@ -19,18 +19,19 @@
       <a class="header-button main-button" href="index.html">Scouting App</a>
       <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
       <div class="header-button" id="loading_status" hidden><i class="fa fa-fw fa-spin fa-refresh"></i></div>
-      <a class="header-button" href="#pane-tickets"><i class="fa fa-calendar"></i><span class="header-button-label-red">5</span></a>
+      <a class="header-button" href="#pane-tickets"><i class="fa fa-calendar"></i><span class="header-button-label-red fill-notifications_counter hidden"></span></a>
       <a class="header-button fill-user_name" href="#pane-user"></a>
       <div class="header-pane-holder" id="pane-tickets">
         <a class="header-pane-close" href="#"></a>
-        <ul class="header-pane ticket-pane">
+        <template id="template-notification">
           <li>
             <a class="ticket-link" href="#">
-              <span class="ticket-title">No notification</span>
-              <span class="ticket-description">You don't have any notifications<br>today</span>
+              <span class="ticket-title fill-notification_title"></span>
+              <span class="ticket-description fill-notification_description"></span>
             </a>
           </li>
-        </ul>
+        </template>
+        <ul class="header-pane ticket-pane fill-notifications"></ul>
       </div>
       <div class="header-pane-holder" id="pane-user">
         <a class="header-pane-close" href="#"></a>

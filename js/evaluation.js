@@ -35,9 +35,8 @@ function prepare_evaluation_form(team) {
         if (evaluation) {
             getById('input_evaluation_id').value = evaluation.id;
             populate_evaluation_answers(evaluation.answers);
-        } else {
-            getById('input_evaluation_team_id').value = team.id;
         }
+        getById('input_evaluation_team_id').value = team.id;
     });
 }
 
@@ -89,7 +88,6 @@ function populate_evaluation_answers(answers) {
         getQuestionById(answer.question_id).then(function(question) {
             switch (question.question_type_id) {
                 case "1":
-                    console.log(question, answer);
                     if (parseInt(answer.value)) {
                         queryFirst('input[name="'+question.id+'"][value="1"]').setAttribute('checked', true);
                         queryFirst('input[name="'+question.id+'"][value="0"]').removeAttribute('checked');
@@ -113,18 +111,14 @@ function submit_evaluation(event) {
 
     var form_data = new FormData(event.target);
     var data = {
-        answers: []
+        answers: [],
+        id: form_data.get('id'),
+        team_id: form_data.get('team_id')
     };
-
-    if (form_data.get('team_id')) {
-        data.team_id = form_data.get('team_id');
-        var method = 'POST';
-    } else {
-        data.id = form_data.get('id');
-        var method = 'PUT';
-    }
     form_data.delete('team_id');
     form_data.delete('id');
+
+    var method = parseInt(data.id) ? 'PUT' : 'POST';
     
     form_data.forEach(function(value, question_id) {
         data.answers.push({question_id: question_id, value: value});
@@ -132,10 +126,28 @@ function submit_evaluation(event) {
 
     api_request('evaluation', method, data, false).then(function(response) {
         if (!response.ok) {
-            alert('Unable to submit the evaluation. Try again');
-            return;
+            alert('Theres something wrong with your answers. Try again'); 
         } else {
-            alert('Evaluation submited');
+            alert('Evaluation submited!');
         }
+    }).catch(function(error) {
+        save_offline_evaluation(data).then(function() {
+            alert('Unable to submit the evaluation. Your answers were saved and will be re-submited again when online');
+        }).then(loadNotifications)
+        .catch(function() {
+            alert('Unable to submit the evaluation, and also unable to save it for re-submiting later');
+        });
     }).then(loadApiEvaluation);
+}
+
+function save_offline_evaluation(evaluation) {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('OfflineEvaluation', 'readwrite');
+        var store = transaction.objectStore('OfflineEvaluation');
+        putEvaluation = store.put(evaluation);
+        putEvaluation.onsuccess = resolve;
+        putEvaluation.onerror = function(error) {
+            throw error;
+        };
+    });
 }

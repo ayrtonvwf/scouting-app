@@ -45,7 +45,68 @@ function loadLayoutData() {
             }
             fillInfo('team_number', team.number);
             fillInfo('team_name', team.name);
+        })
+        .then(loadNotifications);
+        
+}
+
+function loadNotifications() {
+    return getOfflineEvaluations().then(function(offline_evaluations) {
+        var counter = queryFirst('.fill-notifications_counter');
+        var notification_template = getTemplate('notification');
+
+        if (!offline_evaluations.length) {
+            counter.innerHTML = '0';
+            counter.classList.add('hidden');
+            var fill_notifications = queryFirst('.fill-notifications');
+            fill_notifications.innerHTML = '';
+            var notification_template_clone = document.importNode(notification_template, true);
+            queryFirst('.fill-notification_title', notification_template_clone).innerHTML = 'Theres nothing here';
+            queryFirst('.fill-notification_description', notification_template_clone).innerHTML = 'You have no notifications';
+            fill_notifications.appendChild(notification_template_clone);
+            return;
+        }
+
+        counter.innerHTML = offline_evaluations.length;
+        counter.classList.remove('hidden');
+
+        var promises = [];
+        offline_evaluations.forEach(function(offline_evaluation) {
+            promises.push(getTeamById(offline_evaluation.team_id).then(function(team) {
+                var notification_template_clone = document.importNode(notification_template, true);
+                queryFirst('.fill-notification_title', notification_template_clone).innerHTML = 'Submit '+team.name+' evaluation';
+                queryFirst('.fill-notification_description', notification_template_clone).innerHTML = 'You made this evaluation offline.<br>Click here to submit it.';
+                queryFirst('a', notification_template_clone).setAttribute('onclick', 'resubmit_evaluation('+offline_evaluation.team_id+')');
+                return notification_template_clone;
+            }));
         });
+        return Promise.all(promises).then(function(notifications) {
+            var fill_notifications = queryFirst('.fill-notifications');
+            fill_notifications.innerHTML = '';
+            notifications.forEach(function(notification) {
+                fill_notifications.appendChild(notification);
+            });
+        });
+    });
+}
+
+function resubmit_evaluation(team_id) {
+    team_id = team_id+""; // to string
+
+    getOfflineEvaluationByTeamId(team_id).then(function(data) {
+        var method = parseInt(data.id) ? 'PUT' : 'POST';
+    
+        api_request('evaluation', method, data, false).then(function(response) {
+            if (!response.ok) {
+                alert('Theres something wrong with your answers. Try again'); 
+            } else {
+                alert('Evaluation submited!');
+                return deleteOfflineEvaluationByTeamId(team_id).then(loadNotifications);
+            }
+        }).catch(function(error) {
+            alert('Unable to submit the evaluation. Try again later');
+        }).then(loadApiEvaluation);
+    });
 }
 
 function fillInfo(name, info) {
@@ -66,6 +127,7 @@ function dbInit() {
             db.createObjectStore('QuestionType', {keyPath: 'id'});
             db.createObjectStore('Question', {keyPath: 'id'});
             db.createObjectStore('Evaluation', {keyPath: 'id'});
+            db.createObjectStore('OfflineEvaluation', {keyPath: 'team_id'});
         };
         db_open.onsuccess = function() {
             db = db_open.result;
@@ -235,6 +297,18 @@ function getTeamByNumber(number) {
     });
 }
 
+function getTeamById(id) {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('Team', 'readonly');
+        var store = transaction.objectStore('Team');
+        var getTeam = store.get(id);
+        getTeam.onsuccess = function() {
+            return getTeam.result ? resolve(getTeam.result) : reject();
+        };
+        getTeam.onerror = reject;
+    });
+}
+
 function getEvaluations() {
     return new Promise(function(resolve, reject) {
         var transaction = db.transaction('Evaluation', 'readonly');
@@ -244,6 +318,40 @@ function getEvaluations() {
             getEvaluations.result ? resolve(getEvaluations.result) : reject();
         };
         getEvaluations.onerror = reject;
+    });
+}
+
+function getOfflineEvaluationByTeamId(team_id) {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('OfflineEvaluation', 'readonly');
+        var store = transaction.objectStore('OfflineEvaluation');
+        var getOfflineEvaluations = store.get(team_id);
+        getOfflineEvaluations.onsuccess = function() {
+            getOfflineEvaluations.result ? resolve(getOfflineEvaluations.result) : reject();
+        };
+        getOfflineEvaluations.onerror = reject;
+    });
+}
+
+function deleteOfflineEvaluationByTeamId(team_id) {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('OfflineEvaluation', 'readwrite');
+        var store = transaction.objectStore('OfflineEvaluation');
+        var getOfflineEvaluations = store.delete(team_id);
+        getOfflineEvaluations.onsuccess = resolve;
+        getOfflineEvaluations.onerror = reject;
+    });
+}
+
+function getOfflineEvaluations() {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('OfflineEvaluation', 'readonly');
+        var store = transaction.objectStore('OfflineEvaluation');
+        var getOfflineEvaluations = store.getAll();
+        getOfflineEvaluations.onsuccess = function() {
+            getOfflineEvaluations.result ? resolve(getOfflineEvaluations.result) : reject();
+        };
+        getOfflineEvaluations.onerror = reject;
     });
 }
 
