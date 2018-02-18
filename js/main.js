@@ -1,28 +1,28 @@
-var app_url = 'http://localhost:8000';
-var api_url = 'http://localhost/scouting';
-var api_headers = new Headers({'Accept': 'application/json'});
-var db;
-var current_user;
-var current_team;
+const app_url = 'http://localhost:8000';
+const api_url = 'http://localhost/scouting';
 const db_name = 'scoutingdb';
+var db;
+var api_headers = new Headers({'Accept': 'application/json'});
 
 window.onload = function () {
     registerServiceWorker();
+    var db_init_promise = dbInit();
 
     if (isOnLoginPage()) {
         return;
     }
+    
     showLoading();
     requestLogin();
 
-    dbInit().then(function() {
-        loadLayoutData();
-    }).then(function() {
-        if (typeof page_default_function === "function") {
-            page_default_function();
-        }
-        hideLoading();
-    });
+    db_init_promise
+        .then(loadLayoutData)
+        .then(function() {
+            if (typeof page_default_function === "function") {
+                page_default_function();
+            }
+            hideLoading();
+        });
 }
 
 function registerServiceWorker() {
@@ -30,22 +30,29 @@ function registerServiceWorker() {
 }
 
 function loadLayoutData() {
-    getCurrentUser().then(function(user) {
-        var elements = document.getElementsByClassName('fill-user_name');
-        for (i = 0; i < elements.length; i++) {
-            elements[i].innerHTML = user.name;
-        }
-    }).then(function() {
-        getCurrentTeam().then(function(team) {
+    return getCurrentUser()
+        .then(function(user) {
+            fillInfo('user_name', user.name);
+            var elements = getByClass('fill-user_name');
+            for (i = 0; i < elements.length; i++) {
+                elements[i].innerHTML = user.name;
+            }
+        })
+        .then(getCurrentTeam)
+        .then(function(team) {
             if (!team) {
                 return;
             }
-            var elements = document.getElementsByClassName('fill-team_number');
-            for (i = 0; i < elements.length; i++) {
-                elements[i].innerHTML = team.number;
-            }
+            fillInfo('team_number', team.number);
+            fillInfo('team_name', team.name);
         });
-    });
+}
+
+function fillInfo(name, info) {
+    var elements = getByClass('fill-'+name);
+    for (i = 0; i < elements.length; i++) {
+        elements[i].innerHTML = info;
+    }
 }
 
 function dbInit() {
@@ -53,8 +60,12 @@ function dbInit() {
         db_open = indexedDB.open(db_name, 1);
         db_open.onupgradeneeded = function() {
             db = db_open.result;
-            var store = db.createObjectStore('User', {keyPath: 'id'});
-            var index = store.createIndex('UserId', ['user.id']);
+            db.createObjectStore('User', {keyPath: 'id'});
+            db.createObjectStore('Team', {keyPath: 'id'});
+            db.createObjectStore('Period', {keyPath: 'id'});
+            db.createObjectStore('QuestionType', {keyPath: 'id'});
+            db.createObjectStore('Question', {keyPath: 'id'});
+            db.createObjectStore('Evaluation', {keyPath: 'id'});
         };
         db_open.onsuccess = function() {
             db = db_open.result;
@@ -66,56 +77,173 @@ function dbInit() {
     });
 }
 
-function getCurrentUser(force_refresh) {
+function loadDataToObjectStore(object_store_name, data) {
     return new Promise(function(resolve, reject) {
-        if (current_user && !force_refresh) {
-            resolve(current_user);
+        var transaction = db.transaction(object_store_name, 'readwrite');
+        var object_store = transaction.objectStore(object_store_name);
+        var clear = object_store.clear();
+        clear.onsuccess = function() {
+            var promises = [];
+            data.forEach(function(item) {
+                promises.push(object_store.put(item));
+            });
+            Promise.all(promises).then(resolve);
+        }
+        clear.onerror = reject;
+    });
+}
+
+function loadApiUser() {
+    return api_request('user', 'GET').then(function(response) {
+        return loadDataToObjectStore('User', response.result);
+    });
+}
+
+function loadApiTeam() {
+    return api_request('team', 'GET').then(function(response) {
+        return loadDataToObjectStore('Team', response.result);
+    });
+}
+
+function loadApiPeriod() {
+    return api_request('period', 'GET').then(function(response) {
+        return loadDataToObjectStore('Period', response.result);
+    });
+}
+
+function loadApiQuestionType() {
+    return api_request('question_type', 'GET').then(function(response) {
+        return loadDataToObjectStore('QuestionType', response.result);
+    });
+}
+
+function loadApiQuestion() {
+    return api_request('question', 'GET').then(function(response) {
+        return loadDataToObjectStore('Question', response.result);
+    });
+}
+
+function loadApiEvaluation() {
+    return api_request('evaluation', 'GET').then(function(response) {
+        return loadDataToObjectStore('Evaluation', response.result);
+    });
+}
+
+function loadApiData() {
+    var promises = [
+        loadApiUser(),
+        loadApiTeam(),
+        loadApiPeriod(),
+        loadApiQuestionType(),
+        loadApiQuestion(),
+        loadApiEvaluation()
+    ];
+
+    return Promise.all(promises);
+}
+
+function getCurrentUser() {
+    return new Promise(function(resolve, reject) {
+        var user_id = localStorage.getItem('user_id');
+
+        if (!user_id) {
+            reject();
             return;
         }
 
-        var user_id = localStorage.getItem('user_id');
         var transaction = db.transaction('User', 'readonly');
         var store = transaction.objectStore('User');
         var getUser = store.get(user_id);
         getUser.onsuccess = function() {
-            if (getUser.result && !force_refresh) {
-                current_user = getUser.result;
-                resolve(current_user);
-            }
-            
-            return api_request('user', 'GET', {id: user_id}).then(function(response) {
-                current_user = response.result[0];
-                transaction = db.transaction('User', 'readwrite');
-                store = transaction.objectStore('User');
-                store.put(current_user);
-                if (!getUser.result || force_refresh) {
-                    resolve(current_user);
-                }
-            });
+            getUser.result ? resolve(getUser.result) : reject();
         };
+        getUser.onerror = reject;
     });
 }
 
-function getCurrentTeam(force_refresh) {
+function getCurrentTeam() {
     return new Promise(function(resolve, reject) {
-        if (current_team && !force_refresh) {
-            resolve(current_team);
-            return;
-        }
-
-        getCurrentUser(force_refresh).then(function(user) {
-            if (team_id = localStorage.getItem('team_id')) {
-                current_team = user.teams.filter(function(team) {
-                    return team.id == team_id;
-                })[0];
-            } else {
-                current_team = user.teams[0];
+        getCurrentUser().then(function(user) {
+            if (!user.teams.length) {
+                reject();
+                return;
             }
-            resolve(current_team);
-            if (current_team) {
-                localStorage.setItem('team_id', current_team.id);
+            
+            var team_id = localStorage.getItem('team_id');
+            if (!team_id) {
+                team_id = user.teams[0].id;
+                localStorage.setItem('team_id', team_id);
             }
+            
+            var team = user.teams.find(function(team) {
+                return team.id == team_id;
+            });
+            
+            team ? resolve(team) : reject();
         });
+    });
+}
+
+function getPeriods() {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('Period', 'readonly');
+        var store = transaction.objectStore('Period');
+        var getPeriods = store.getAll();
+        getPeriods.onsuccess = function() {
+            getPeriods.result ? resolve(getPeriods.result) : reject();
+        };
+        getPeriods.onerror = reject;
+    });
+}
+
+function getQuestions() {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('Question', 'readonly');
+        var store = transaction.objectStore('Question');
+        var getQuestions = store.getAll();
+        getQuestions.onsuccess = function() {
+            getQuestions.result ? resolve(getQuestions.result) : reject();
+        };
+        getQuestions.onerror = reject;
+    });
+}
+
+function getQuestionById(id) {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('Question', 'readonly');
+        var store = transaction.objectStore('Question');
+        var getQuestion = store.get(id);
+        getQuestion.onsuccess = function() {
+            getQuestion.result ? resolve(getQuestion.result) : reject();
+        };
+        getQuestion.onerror = reject;
+    });
+}
+
+function getTeamByNumber(number) {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('Team', 'readonly');
+        var store = transaction.objectStore('Team');
+        var getTeams = store.getAll();
+        getTeams.onsuccess = function() {
+            var team = getTeams.result.find(function(team) {
+                return team.number == number;
+            });
+            return team ? resolve(team) : reject();
+        };
+        getTeams.onerror = reject;
+    });
+}
+
+function getEvaluations() {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('Evaluation', 'readonly');
+        var store = transaction.objectStore('Evaluation');
+        var getEvaluations = store.getAll();
+        getEvaluations.onsuccess = function() {
+            getEvaluations.result ? resolve(getEvaluations.result) : reject();
+        };
+        getEvaluations.onerror = reject;
     });
 }
 
@@ -192,9 +320,31 @@ function logout() {
 }
 
 function showLoading() {
-    document.getElementById('loading_status').removeAttribute('hidden');
+    getById('loading_status').removeAttribute('hidden');
 }
 
 function hideLoading() {
-    document.getElementById('loading_status').setAttribute('hidden', '');
+    getById('loading_status').setAttribute('hidden', '');
+}
+
+function getTemplate(name) {
+    var id = 'template-'+name;
+    return getById(id).content;
+}
+
+function queryFirst(selector, context) {
+    if (context == undefined) {
+        context = document;
+    }
+
+    var elements = context.querySelectorAll(selector);
+    return elements.length ? elements[0] : undefined;
+}
+
+function getById(id) {
+    return document.getElementById(id);
+}
+
+function getByClass(class_name) {
+    return document.getElementsByClassName(class_name);
 }

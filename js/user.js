@@ -1,11 +1,11 @@
 function user_submit(event) {
     event.preventDefault();
     var data = {
-        name: document.getElementById('input-user_name').value,
-        email: document.getElementById('input-user_email').value,
-        new_password: document.getElementById('input-user_new_password').value,
-        re_password: document.getElementById('input-user_re_password').value,
-        password: document.getElementById('input-user_password').value
+        name: getById('input-user_name').value,
+        email: getById('input-user_email').value,
+        new_password: getById('input-user_new_password').value,
+        re_password: getById('input-user_re_password').value,
+        password: getById('input-user_password').value
     }
 
     var password_inputs = document.querySelectorAll('[type=password]');
@@ -15,10 +15,12 @@ function user_submit(event) {
     
     api_request('user', 'PUT', data, false).then(function(response) {
         if (response.ok) {
-            getCurrentUser(true).then(function(user) {
-                loadLayoutData();
-                alert('User updated!');
-            });
+            loadApiUser()
+                .then(getCurrentUser)
+                .then(loadLayoutData)
+                .then(function() {
+                    alert('User updated!');
+                });
         } else {
             alert('Cannot update. Try again');
         }
@@ -27,20 +29,20 @@ function user_submit(event) {
 
 var page_default_function = function() {
     getCurrentUser().then(function(user) {
-        document.getElementById('input-user_name').value = user.name;
-        document.getElementById('input-user_email').value = user.email;
-        document.getElementsByClassName('fill-user_teams')[0].innerHTML = '';
+        getById('input-user_name').value = user.name;
+        getById('input-user_email').value = user.email;
+        getByClass('fill-user_teams')[0].innerHTML = '';
 
-        var team_template = document.getElementById('template-user_team');
-        var template_clone, team;
+        var team;
+        var team_template = getTemplate('user_team');
         for (i = 0; i < user.teams.length; i++) {
             team = user.teams[i];
-            team_template.content.querySelectorAll('tr')[0].setAttribute('id', 'user_team_row-'+team.id);
-            team_template.content.querySelectorAll('.fill-user_team_name')[0].textContent = team.name;
-            team_template.content.querySelectorAll('.fill-user_team_number')[0].textContent = team.number;
-            team_template.content.querySelectorAll('.user_team_leave_button')[0].setAttribute('onclick', 'leave_team('+team.id+')');
-            template_clone = document.importNode(team_template.content, true);
-            document.querySelectorAll('.fill-user_teams')[0].appendChild(template_clone);
+            team_template.querySelectorAll('tr')[0].setAttribute('id', 'user_team_row-'+team.id);
+            team_template.querySelectorAll('.fill-user_team_name')[0].textContent = team.name;
+            team_template.querySelectorAll('.fill-user_team_number')[0].textContent = team.number;
+            team_template.querySelectorAll('.user_team_leave_button')[0].setAttribute('onclick', 'leave_team('+team.id+')');
+            team_template = document.importNode(team_template, true);
+            document.querySelectorAll('.fill-user_teams')[0].appendChild(team_template);
         }
     });
 }
@@ -56,11 +58,11 @@ function leave_team(id) {
             hideLoading();
             return;
         }
-        
-        getCurrentUser(true).then(function() {
-            page_default_function();
-            hideLoading();
-        });
+
+        loadApiUser()
+            .then(getCurrentUser)
+            .then(page_default_function)
+            .then(hideLoading);
     });
 }
 
@@ -72,7 +74,7 @@ function join_team(event) {
     }
     showLoading();
     
-    var team_number = document.getElementById('user-join_team_number').value;
+    var team_number = getById('user-join_team_number').value;
     api_request('team', 'GET', {number_start: team_number, number_end: team_number}).then(function(response) {
         if (!response.result.length) {
             alert('Team not found!');
@@ -87,11 +89,11 @@ function join_team(event) {
                 hideLoading();
                 return;
             }
-    
-            getCurrentUser(true).then(function() {
-                page_default_function();
-                hideLoading();
-            });
+
+            loadApiUser()
+                .then(getCurrentUser)
+                .then(page_default_function)
+                .then(hideLoading);
         });
     });
 }

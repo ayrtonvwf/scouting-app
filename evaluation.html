@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="js/main.js"></script>
+    <script src="js/evaluation.js"></script>
   </head>
   <body>
     <header class="header">
@@ -56,10 +57,8 @@
           </div>
         </form>
         <a class="menu-link" href="user.html"><i class="fa fa-fw fa-user"></i> User</a>
-        <a class="menu-link" href="team.html"><i class="fa fa-fw fa-users"></i> Team</a>
-        <a class="menu-link" href="evaluation.html"><i class="fa fa-fw fa-pencil"></i> Evaluation</a>
+        <a class="menu-link menu-active" href="evaluation.html"><i class="fa fa-fw fa-pencil"></i> Evaluation</a>
         <a class="menu-link" href="reports.html"><i class="fa fa-fw fa-line-chart"></i> Reports</a>
-        <a class="menu-link" href="about.html"><i class="fa fa-fw fa-info"></i> About</a> 
       </nav>
       <main class="content">
         <div class="row">
@@ -67,254 +66,94 @@
             <h1 class="content-title"><i class="fa fa-pencil"></i> Evaluation</h1>
           </div>
         </div>
-        
-        <form>
-        
-          <div class="row">
-            <div class="col-md-8 col-md-push-2">
-              <div class="box">
-                <div class="box-header">Autonomous period</div>
-                <div class="box-body">
-                  <div class="row">
-
-                    <div class="col-xs-12">
-                      <p>Left from the middle</p>
-                      <label>
-                        <input type="radio" name="radio_1">Yes
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_1">No
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <p>Left loaded</p>
-                      <label>
-                        <input type="radio" name="radio_2">Yes
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_2">No
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <p>Crossed the auto line</p>
-                      <label>
-                        <input type="radio" name="radio_3">Yes
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_3">No
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <p>Attemp to get the control of the switch</p>
-                      <label>
-                        <input type="radio" name="radio_4">Yes, and was able to control it.
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_4">Yes
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_4">No
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <p>Attemp to get the control of the scale</p>
-                      <label>
-                        <input type="radio" name="radio_5">Yes, and was able to control it.
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_5">Yes
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_5">No
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <p class="tooltip" title="Attemp to move other power ups, besides the first PU">Attemp to move other power ups</p>
-                        <label>
-                          <input type="radio" name="radio_6">Yes
-                        </label>
-                        <label>
-                          <input type="radio" name="radio_6">No
-                        </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                       <label>
-                        How many PUs have been moved by the robot?
-                        <input type="number" min="0">
-                      </label>
-                    </div>
-
-                  </div>  
+        <div class="row">
+          <div class="col-md-8 col-md-push-2">
+            <form onsubmit="select_evaluation_team(event)">
+              <div class="row" id="evaluation-select_team_alert">
+                <div class="alert alert-blue col-sm-8 col-sm-push-2 text-center">Select a team to evaluate.</div>
+              </div>
+              <br>
+              <div class="row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-4 input">
+                  <input class="col-xs-8" placeholder="Team number" required id="user-join_team_number">
+                </div> 
+                <div class="col-sm-2">
+                  <button class="btn-green" type="submit" style="margin: 0px">Select</button>
                 </div>
-              </div>  
-            </div>
+              </div>
+              <br>
+            </form>
+
+            <form onsubmit="submit_evaluation(event)">
+              <input type="hidden" name="team_id" id="input_evaluation_team_id">
+              <input type="hidden" name="id" id="input_evaluation_id">
+              <div class="fill-evaluation_periods"></div>
+              <div id="evaluation_submit_button_wrapper" hidden>
+                <button class="btn-green pull-right btn-large" type="submit">Submit evaluation</button>
+              </div>
+            </form>
           </div>
-
-          <div class="row">
-            <div class="col-md-8 col-md-push-2">
-              <div class="box">
-                <div class="box-header">Climb period</div>
-                <div class="box-body">
-                  <div class="row">
-
-                    <div class="col-xs-12">
-                      <p>Did parking</p>
-                      <label>
-                        <input type="radio" name="radio_1">Yes
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_1">No
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <p>Climbed without levitate</p>
-                      <label>
-                        <input type="radio" name="radio_2">Yes
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_2">Yes, and support the others
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_2">Yes, and climbed with other robot support
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_2">No
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_2">No, and used the levitate
-                      </label>
-                      <label>
-                        <input type="radio" name="radio_2">No, but tried to climb
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <label>
-                        Describe how the robot climbed or tried to climb                        
-                      </label>
-                      <textarea class="resize-v"></textarea>
-                      <hr>
-                    </div>
-
-                  </div>  
-                </div>
-              </div> 
-            </div>
-          </div>  
-
-
-          <div class="row">
-            <div class="col-md-8 col-md-push-2">
-              <div class="box">
-                <div class="box-header">Teleoperated period</div>
-                <div class="box-body">
-                  <div class="row">
-
-                    <div class="col-xs-12">
-                      <label>
-                        How many PUs the robot put in the aliance switch's?
-                        <input type="number" min="0">
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <label>
-                        How many PUs the robot put in the scale?
-                        <input type="number" min="0">
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <label>
-                        How many PUs the robot put in the enemies switch's?
-                        <input type="number" min="0">
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <label>
-                        How many PUs were passed through the exhange?
-                        <input type="number" min="0">
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <label>
-                        How many PUs the robot dropped?
-                        <input type="number" min="0">
-                      </label>
-                      <hr>
-                    </div>
-
-                    <div class="col-xs-12">
-                      <label>
-                        How many times the robot tried to block another robot?
-                         <input type="number" min="0">
-                      </label>
-                      <hr>
-                    </div>    
-
-                  </div>  
-                </div>
-              </div> 
-            </div>
-          </div>  
-          
-          
-          <div class="row">
-            <div class="col-md-8 col-md-push-2">
-              <div class="box">
-                <div class="box-header">Submit evaluation</div>
-                <div class="box-body">
-                  <div class="row">
-                    
-                    <div class="col-xs-12">
-                      <label>
-                        Team name:
-                        <input type="text">
-                      </label>
-                    </div>
-                    
-                    <div class="col-xs-12">
-                      <label>
-                        Team number:
-                        <input type="number" min="0">
-                      </label>
-                    </div>
-                    
-                    <div class="col-xs-12 text-right">
-                      <button class="btn-green" type="submit">Submit</button>
-                    </div>
-                  </div>  
-                </div>
-              </div> 
-            </div>
-          </div>  
-
-          
-        </form>
-        
+        </div>
       </main>
     </div>
-    <script src="js/main.js"></script>
   </body>
 </html>
+
+<template id="template-evaluation_question_boolean">
+  <div class="col-xs-12">
+    <p class="fill-evaluation_question_description"></p>
+    <label>
+      <input type="radio" value="1">Yes
+    </label>
+    <label>
+      <input type="radio" value="0" checked>No
+    </label>
+    <hr>
+  </div>
+</template>
+
+<template id="template-evaluation_question_integer">
+  <div class="col-xs-12 input">
+    <label>
+      <span class="fill-evaluation_question_description"></span>
+      <input type="number" min="0" max="1000000" step="1" value="0">
+    </label>
+  </div>
+</template>
+
+<template id="template-evaluation_question_percent">
+  <div class="col-xs-12 input">
+    <label>
+      <span class="fill-evaluation_question_description"></span>
+      <input type="number" min="0" max="100" step="1" value="0">
+    </label>
+  </div>
+</template>
+
+<template id="template-evaluation_question_phrase">
+  <div class="col-xs-12 input">
+    <label>
+      <span class="fill-evaluation_question_description"></span>
+      <input type="text" maxlength="100">
+    </label>
+  </div>
+</template>
+
+<template id="template-evaluation_question_text">
+  <div class="col-xs-12 input">
+    <label>
+      <span class="fill-evaluation_question_description"></span>
+      <textarea maxlength="1000" class="resize-v"></textarea>
+    </label>
+  </div>
+</template>
+
+<template id="template-evaluation_period">
+  <div class="box">
+    <div class="box-header fill-evaluation_period_name"></div>
+    <div class="box-body">
+      <div class="row fill-evaluation_questions"></div>
+    </div>
+  </div> 
+</template>

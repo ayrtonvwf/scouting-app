@@ -1,14 +1,13 @@
 var cache_name = 'scouting-cache';
 var urlsToCache = [
     '/',
-    'about.html',
     'evaluation.html',
     'index.html',
     'login.html',
     'reports.html',
-    'team.html',
     'user.html',
     'css/style.css',
+    'js/evaluation.js',
     'js/login.js',
     'js/main.js',
     'js/user.js',
