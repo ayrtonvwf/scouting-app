@@ -37,16 +37,7 @@ function loadLayoutData() {
             for (i = 0; i < elements.length; i++) {
                 elements[i].innerHTML = user.name;
             }
-        })
-        .then(getCurrentTeam)
-        .then(function(team) {
-            if (!team) {
-                return;
-            }
-            fillInfo('team_number', team.number);
-            fillInfo('team_name', team.name);
-        })
-        .then(loadNotifications);
+        }).then(loadNotifications);
         
 }
 
@@ -220,29 +211,6 @@ function getCurrentUser() {
             getUser.result ? resolve(getUser.result) : reject();
         };
         getUser.onerror = reject;
-    });
-}
-
-function getCurrentTeam() {
-    return new Promise(function(resolve, reject) {
-        getCurrentUser().then(function(user) {
-            if (!user.teams.length) {
-                reject();
-                return;
-            }
-            
-            var team_id = localStorage.getItem('team_id');
-            if (!team_id) {
-                team_id = user.teams[0].id;
-                localStorage.setItem('team_id', team_id);
-            }
-            
-            var team = user.teams.find(function(team) {
-                return team.id == team_id;
-            });
-            
-            team ? resolve(team) : reject();
-        });
     });
 }
 

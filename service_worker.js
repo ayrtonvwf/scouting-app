@@ -6,12 +6,21 @@ var urlsToCache = [
     'login.html',
     'reports.html',
     'user.html',
+
     'css/style.css',
+    
     'js/evaluation.js',
     'js/login.js',
     'js/main.js',
     'js/user.js',
-    'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
+    
+    'font-awesome/css/font-awesome.min.css',
+    'font-awesome/fonts/fontawesome-webfont.eot',
+    'font-awesome/fonts/fontawesome-webfont.svg',
+    'font-awesome/fonts/fontawesome-webfont.ttf',
+    'font-awesome/fonts/fontawesome-webfont.woff',
+    'font-awesome/fonts/fontawesome-webfont.woff2',
+    'font-awesome/fonts/FontAwesome.otf'
 ];
 
 self.addEventListener('install', function(event) {
