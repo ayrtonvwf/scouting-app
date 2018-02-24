@@ -30,7 +30,7 @@ function prepare_evaluation_form(team) {
         build_evaluation_questions(periods);
         
         var evaluation = data[2].find(function(evaluation) {
-            return evaluation.self && evaluation.team_id == team.id;
+            return evaluation.self == "1" && evaluation.team_id == team.id;
         });
         if (evaluation) {
             getById('input_evaluation_id').value = evaluation.id;
