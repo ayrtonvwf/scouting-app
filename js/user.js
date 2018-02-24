@@ -33,16 +33,16 @@ var page_default_function = function() {
         getById('input-user_email').value = user.email;
         getByClass('fill-user_teams')[0].innerHTML = '';
 
-        var team;
+        var team, team_template_clone;
         var team_template = getTemplate('user_team');
         for (i = 0; i < user.teams.length; i++) {
+            team_template_clone = document.importNode(team_template, true);
             team = user.teams[i];
-            team_template.querySelectorAll('tr')[0].setAttribute('id', 'user_team_row-'+team.id);
-            team_template.querySelectorAll('.fill-user_team_name')[0].textContent = team.name;
-            team_template.querySelectorAll('.fill-user_team_number')[0].textContent = team.number;
-            team_template.querySelectorAll('.user_team_leave_button')[0].setAttribute('onclick', 'leave_team('+team.id+')');
-            team_template = document.importNode(team_template, true);
-            document.querySelectorAll('.fill-user_teams')[0].appendChild(team_template);
+            queryFirst('tr', team_template_clone).setAttribute('id', 'user_team_row-'+team.id);
+            queryFirst('.fill-user_team_name', team_template_clone).textContent = team.name;
+            queryFirst('.fill-user_team_number', team_template_clone).textContent = team.number;
+            queryFirst('.user_team_leave_button', team_template_clone).setAttribute('onclick', 'leave_team('+team.id+')');
+            queryFirst('.fill-user_teams').appendChild(team_template_clone);
         }
     });
 }
