@@ -259,13 +259,17 @@ function getTeamByNumber(number) {
             var team = getTeams.result.find(function(team) {
                 return team.number == number;
             });
+
             return team ? resolve(team) : reject();
         };
-        getTeams.onerror = reject;
+        getTeams.onerror = function() {
+            return reject();
+        };
     });
 }
 
 function getTeamById(id) {
+    id = id+""; // to string;
     return new Promise(function(resolve, reject) {
         var transaction = db.transaction('Team', 'readonly');
         var store = transaction.objectStore('Team');
@@ -284,6 +288,27 @@ function getEvaluations() {
         var getEvaluations = store.getAll();
         getEvaluations.onsuccess = function() {
             getEvaluations.result ? resolve(getEvaluations.result) : reject();
+        };
+        getEvaluations.onerror = reject;
+    });
+}
+
+function getEvaluationsByTeamId(team_id) {
+    return new Promise(function(resolve, reject) {
+        var transaction = db.transaction('Evaluation', 'readonly');
+        var store = transaction.objectStore('Evaluation');
+        var getEvaluations = store.getAll();
+        getEvaluations.onsuccess = function() {
+            if (!getEvaluations.result.length) {
+                reject();
+                return;
+            }
+            
+            var evaluations = getEvaluations.result.filter(function(evaluation) {
+                return evaluation.team_id == team_id;
+            });
+            
+            resolve(evaluations);            
         };
         getEvaluations.onerror = reject;
     });

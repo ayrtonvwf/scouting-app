@@ -1,279 +1,196 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
-    <meta name="theme-color" content="#3c8dbc">
-    <meta name="msapplication-TileColor" content="#3c8dbc">
-    <meta name="msapplication-navbutton-color" content="#3c8dbc">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ScoutingAPP</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
-    <script src="js/main.js"></script>
-  </head>
-  <body>
-    <header class="header">
-      <a class="header-button main-button" href="index.html">Scouting App</a>
-      <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
-      <div class="header-button" id="loading_status" hidden><i class="fa fa-fw fa-spin fa-refresh"></i></div>
-      <a class="header-button" href="#pane-tickets"><i class="fa fa-calendar"></i><span class="header-button-label-red fill-notifications_counter hidden"></span></a>
-      <a class="header-button fill-user_name" href="#pane-user"></a>
-      <div class="header-pane-holder" id="pane-tickets">
-        <a class="header-pane-close" href="#"></a>
-        <template id="template-notification">
-          <li>
-            <a class="ticket-link" href="#">
-              <span class="ticket-title fill-notification_title"></span>
-              <span class="ticket-description fill-notification_description"></span>
-            </a>
-          </li>
-        </template>
-        <ul class="header-pane ticket-pane fill-notifications"></ul>
-      </div>
-      <div class="header-pane-holder" id="pane-user">
-        <a class="header-pane-close" href="#"></a>
-        <div class="header-pane user-pane">
-          <div class="user-background">
-            <i class="fa fa-user user-icon"></i>
-            <span class="fill-user_name"></span>
-          </div>
-          <div class="user-buttons">
-            <a class="user-btn" href="#" onclick="logout()">Log out</a>
-          </div>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+  <meta name="theme-color" content="#3c8dbc">
+  <meta name="msapplication-TileColor" content="#3c8dbc">
+  <meta name="msapplication-navbutton-color" content="#3c8dbc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ScoutingAPP</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+  <script src="js/main.js"></script>
+  <script src="js/reports.js"></script>
+</head>
+
+<body>
+  <header class="header">
+    <a class="header-button main-button" href="index.html">Scouting App</a>
+    <a class="header-button menu-toggle" href="#menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <div class="header-button" id="loading_status" hidden>
+      <i class="fa fa-fw fa-spin fa-refresh"></i>
+    </div>
+    <a class="header-button" href="#pane-tickets">
+      <i class="fa fa-calendar"></i>
+      <span class="header-button-label-red fill-notifications_counter hidden"></span>
+    </a>
+    <a class="header-button fill-user_name" href="#pane-user"></a>
+    <div class="header-pane-holder" id="pane-tickets">
+      <a class="header-pane-close" href="#"></a>
+      <template id="template-notification">
+        <li>
+          <a class="ticket-link" href="#">
+            <span class="ticket-title fill-notification_title"></span>
+            <span class="ticket-description fill-notification_description"></span>
+          </a>
+        </li>
+      </template>
+      <ul class="header-pane ticket-pane fill-notifications"></ul>
+    </div>
+    <div class="header-pane-holder" id="pane-user">
+      <a class="header-pane-close" href="#"></a>
+      <div class="header-pane user-pane">
+        <div class="user-background">
+          <i class="fa fa-user user-icon"></i>
+          <span class="fill-user_name"></span>
+        </div>
+        <div class="user-buttons">
+          <a class="user-btn" href="#" onclick="logout()">Log out</a>
         </div>
       </div>
-    </header>
-    <div class="container">
-      <nav class="menu" id="menu">
-        <a class="menu-close header-button" href="#"><i class="fa fa-bars"></i></a>
-        <a class="menu-link" href="user.html"><i class="fa fa-fw fa-user"></i> User</a>
-        <a class="menu-link" href="evaluation.html"><i class="fa fa-fw fa-pencil"></i> Evaluation</a>
-        <a class="menu-link menu-active" href="reports.html"><i class="fa fa-fw fa-line-chart"></i> Reports</a>
-      </nav>
-      <main class="content">
-        <div class="row">
-          <div class="col-xs-12">
-            <h1 class="content-title"><i class="fa fa-line-chart"></i> Reports</h1>
-          </div>
+    </div>
+  </header>
+  <div class="container">
+    <nav class="menu" id="menu">
+      <a class="menu-close header-button" href="#">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a class="menu-link" href="user.html">
+        <i class="fa fa-fw fa-user"></i> User</a>
+      <a class="menu-link" href="evaluation.html">
+        <i class="fa fa-fw fa-pencil"></i> Evaluation</a>
+      <a class="menu-link menu-active" href="reports.html">
+        <i class="fa fa-fw fa-line-chart"></i> Reports</a>
+    </nav>
+    <main class="content">
+      <div class="row">
+        <div class="col-xs-12">
+          <h1 class="content-title">
+            <i class="fa fa-line-chart"></i> Reports</h1>
         </div>
-        
-        
-        <div class="row">
-          <div class="col-md-6">         
-            <div class="box">
-              <div class="box-header">Questions</div>
-              <div class="box-body">
-                <div class="row">
-                  <div class="col-xs-12">
-                    <p class="title-4">Autonomus</p>
-                    <p>Left through the middle</p>
-                    <p>Left Loaded</p>
-                    <p>Crossed the auto line</p>
-                    <p class="title-4">Teleoperated</p>
-                    <p>PUs placed in the alliance switch</p>
-                    <p>PUs placed on the scale</p>
-                    <p class="title-4">Climbing</p>
-                    <p>Climbed without levitate</p>
-                    <p>Helped other robots to climb</p>
-                    <br>
-                    <a href="#modal-hidden-questions">There are 1 hidden question(s)</a>
-                    <a href="#modal-change-questions" class="btn-green" type="button" style="position: absolute; bottom: 0px; right: 15px">Change</a>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="box">
+            <div class="box-header">Questions</div>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-xs-12">
+                  <template id="template-selected_period">
+                    <p class="title-4 fill-selected_period_name"></p>
+                  </template>
+                  <template id="template-selected_question">
+                    <p class="fill-selected_question_description"></p>
+                  </template>
+                  <div id="fill-selected_questions"></div>
+                  <div class="alert alert-blue text-center" id="reports_select_questions_alert">Select some questions to see the report</div>
+                  <div class="text-right">
+                    <a href="#modal-change-questions" class="btn-green">Select questions</a>
                   </div>
                 </div>
               </div>
-              
-              
             </div>
           </div>
-          <div class="col-md-6">         
-            <div class="box">
-              <div class="box-header">Teams</div>
-              <div class="box-body">
-                <br>
-                <div class="row">
+        </div>
+        <div class="col-md-6">
+          <div class="box">
+            <div class="box-header">Teams</div>
+            <div class="box-body">
+              <br>
+              <div class="row">
+                <form onsubmit="select_report_team(event)">
                   <div class="col-sm-3"></div>
                   <div class="col-sm-4 input">
                     <input class="col-xs-8" "input" placeholder="Team number" required>
-                  </div> 
+                  </div>
                   <div class="col-sm-2">
-                    <button class="btn-green" type="submit"  style="margin: 0px">Add</button>
+                    <button class="btn-green" type="submit" style="margin: 0px">Add</button>
                   </div>
+                </form>
+              </div>
+              <br>
+              <div class="row">
+                <template id="template-selected_team">
+                  <div class="col-sm-4">
+                    <p>
+                      <button class="btn-red btn-small fa fa-times" type="button"></button>
+                      <span class="fill-selected_team_name"></span> -
+                      <span class="fill-selected_team_number"></span>
+                    </p>
+                  </div>
+                </template>
+                <div class="col-xs-12" id="reports_select_teams_alert">
+                  <div class="alert alert-blue text-center">No team selected. Showing first 30</div>
                 </div>
-                <br>
-                <div class="row">                  
-                  <div class="col-sm-4">
-                    <p>
-                      <button class="btn-red btn-small fa fa-times" type="button"></button>
-                      Roosters - 7033
-                    </p>
-                  </div>
-                  <div class="col-sm-4">
-                    <p>
-                      <button class="btn-red btn-small fa fa-times" type="button"></button>
-                      Roosters - 7033
-                    </p>
-                  </div>
-                  <div class="col-sm-4">
-                    <p>
-                      <button class="btn-red btn-small fa fa-times" type="button"></button>
-                      Roosters - 7033
-                    </p>
-                  </div>
-                  <div class="col-sm-4">
-                    <p>
-                      <button class="btn-red btn-small fa fa-times" type="button"></button>
-                      Roosters - 7033
-                    </p>
-                  </div>
+                <div class="fill-selected_teams"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row" id="report_result_box" hidden>
+        <div class="col-md-12">
+          <div class="box">
+            <div class="box-header"></div>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-sm-12">
+                  <table class="table">
+                    <thead>
+                      <template id="template-report_question">
+                        <th class="fill-report_question_description"></th>
+                      </template>
+                      <tr class="fill-header_questions"></tr>
+                    </thead>
+                    <template id="template-report_answer_result">
+                      <td class="fill-report_answer_result"></td>
+                    </template>
+                    <template id="template-report_answer">
+                      <tr class="fill-report_answer"></tr>
+                    </template>
+                    <tbody class="fill-report_answers"></tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="9">
+                          <b>Total:</b> 3
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        
-        <div class="row">
-          <div class="col-md-12">
-            <div class="box">
-              <div class="box-header"></div>
-              <div class="box-body">
-                <div class="row">
-                  <div class="col-sm-12">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Team's robot</th>
-                          <th>Did parking</th>
-                          <th>Climbed without levitate</th>
-                          <th>Climbed without help</th>  
-                          <th>Switch control</th>
-                          <th>Helped other robots to climb</th>
-                          <th>Used Levitate</th>
-                          <th>Tried to climb</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>7033</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td>No</td>
-                          <td>No</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td class="text-right">
-                            <a class="user-btn btn-blue btn-small" href="#modal-full-evaluation">Full evaluation</a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>9988</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td>No</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td class="text-right">
-                            <a class="user-btn btn-blue btn-small" href="#modal-full-evaluation">Full evaluation</a>
-                          </td> 
-                        </tr>
-                        <tr>
-                          <td>8754</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                          <td>No</td>
-                          <td>No</td>
-                          <td>Yes</td>
-                          <td>No</td>
-                          <td class="text-right">
-                            <a class="user-btn btn-blue btn-small" href="#modal-full-evaluation">Full evaluation</a>
-                          </td>
-                        </tr>
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <td colspan="9"><b>Total:</b> 3</td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                    
-                    <!-- Modals -->
-                    
-                    <div class="modal" id="modal-hidden-questions">
-                      <h2 class="modal-header">Descriptive questions</h2>
-                      <div class="modal-body">                        
-                        <p>Details about how the robot climbed</p>
-                        <p><i>(These questions can be viewed through the "Full Evaluation" option in the table).</i></p>
-                      </div>
-                      <div class="modal-footer text-right"><a class="btn-red" href="#">Close</a></div>
-                    </div><a class="modal-close" href="#"></a>   
-                    
-                    <div class="modal" id="modal-full-evaluation">
-                      <h2 class="modal-header">Full evaluation of team 7033 robot</h2>
-                      <div class="modal-body">                        
-                        
-                        <p class="title-4">Last update</p>
-                        <p>2018-2-4</p>
-                        
-                        <br>
-                        <p class="title-4">Answers</p>
-                        <p><b>Did parking?</b></p>
-                        <p>Yes</p>
-                        <br>
-                        <p><b>How the robot tried to climb?</b></p>
-                        <p>The robot tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb 
-                        while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb </p>
-                        <br>
-                        <p><b>Did parking?</b></p>
-                        <p>Yes</p>
-                        <br>
-                        <p><b>How the robot tried to climb?</b></p>
-                        <p>The robot tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb 
-                        while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb while tried to climb </p>
-
-                        
-                      </div>
-                      <div class="modal-footer text-right"><a class="btn-red" href="#">Close</a></div>
-                    </div>
-                    <a class="modal-close" href="#"></a>  
-                    
-                    <div class="modal" id="modal-change-questions">
-                      <h2 class="modal-header">Select questions</h2>
-                      <div class="modal-body">
-                       
-                        <br>
-                        <p class="title-4">Autonomus</p>
-                        <p><label><input type="checkbox"> Left through the middle</label></p>
-                        <p><label><input type="checkbox"> Left Loaded</label></p>
-                        <p><label><input type="checkbox"> Crossed the auto line</label></p>
-                        <br>
-                        <p class="title-4">Teleoperated</p>
-                        <p><label><input type="checkbox"> PUs placed in the alliance switch</label></p>
-                        <p><label><input type="checkbox"> PUs placed on the scale</label></p>
-                        <br>
-                        <p class="title-4">Climbing</p>
-                        <p><label><input type="checkbox"> Climbed without levitate</label></p>
-                        <p><label><input type="checkbox"> Helped other robots to climb</label></p>
-                        <br>
-                        
-                      </div>
-                      <div class="modal-footer text-right"><a class="btn-red" href="#">Close</a></div>
-                    </div><a class="modal-close" href="#"></a>   
-                    
-                  </div>
-                </div>
-              </div>
-            </div>            
-          </div>
-        </div>
-        
-      </main>
+      </div>
+    </main>
+  </div>
+  
+  <div class="modal" id="modal-change-questions">
+    <h2 class="modal-header">Select questions</h2>
+    <div class="modal-body">
+      <template id="template-reports_select_period">
+        <p class="title-4 fill-select_period_name"></p>
+      </template>
+      <template id="template-reports_select_question">
+        <p>
+          <label>
+            <input type="checkbox" onclick="select_question(event)"> <span class="fill-select_question_description"></span>
+          </label>
+        </p>
+      </template>
+      <form id="fill-select_questions"></form>
+      <a href="#" id="text_questions_link"><span class="fill-ignored_questions"></span> hidden text questions.</a>
     </div>
-  </body>
+    <div class="modal-footer text-right"><a class="btn-green" href="#">Confirm</a></div>
+  </div>
+  <a class="modal-close" href="#"></a>   
+</body>
+
 </html>
