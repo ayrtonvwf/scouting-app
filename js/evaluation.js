@@ -14,22 +14,15 @@ function select_evaluation_team(event) {
 }
 
 function prepare_evaluation_form(team) {
-    Promise.all([getPeriods(), getQuestions(), getEvaluations(), team]).then(function(data) {
-        var periods = data[0];
-        var questions = data[1];
-        var team = data[3];
+    Promise.all([getQuestions(), getEvaluations(), team]).then(function(data) {
+        var questions = data[0];
+        var team = data[2];
 
         getById('evaluation_submit_button_wrapper').removeAttribute('hidden');
 
-        for (var i = 0; i < periods.length; i++) {
-            periods[i].questions = questions.filter(function(question) {
-                return question.period_id == periods[i].id;
-            });
-        }
-
-        build_evaluation_questions(periods);
+        build_evaluation_questions(questions);
         
-        var evaluation = data[2].find(function(evaluation) {
+        var evaluation = data[1].find(function(evaluation) {
             return evaluation.self == "1" && evaluation.team_id == team.id;
         });
         if (evaluation) {
@@ -40,46 +33,42 @@ function prepare_evaluation_form(team) {
     });
 }
 
-function build_evaluation_questions(periods) {
-    var evaluation_periods_fill = getByClass('fill-evaluation_periods')[0];
-    evaluation_periods_fill.innerHTML = '';
+function build_evaluation_questions(questions) {
+    var evaluation_questions_fill = queryFirst('.fill-evaluation_questions');
+    evaluation_questions_fill.innerHTML = '';
 
-    var period, period_template, period_template_clone, question, question_template, question_template_clone, question_i;
-    for (var period_i = 0; period_i < periods.length; period_i++) {
-        period = periods[period_i];
-        period_template = getTemplate('evaluation_period');
-        period_template_clone = document.importNode(period_template, true);
-        queryFirst('.fill-evaluation_period_name', period_template_clone).textContent = period.name;
-        for (question_i = 0; question_i < period.questions.length; question_i++) {
-            question = period.questions[question_i];
-            switch (question.question_type_id) {
-                case "1":
-                    question_template = getTemplate('evaluation_question_boolean');
-                    question_template.querySelectorAll('input')[0].setAttribute('name', question.id);
-                    question_template.querySelectorAll('input')[1].setAttribute('name', question.id);
-                    break;
-                case "2":
-                    question_template = getTemplate('evaluation_question_integer');
-                    question_template.querySelectorAll('input')[0].setAttribute('name', question.id);
-                    break;
-                case "3":
-                    question_template = getTemplate('evaluation_question_percent');
-                    question_template.querySelectorAll('input')[0].setAttribute('name', question.id);
-                    break;
-                case "4":
-                    question_template = getTemplate('evaluation_question_phrase');
-                    question_template.querySelectorAll('input')[0].setAttribute('name', question.id);
-                    break;
-                case "5":
-                    question_template = getTemplate('evaluation_question_text');
-                    question_template.querySelectorAll('textarea')[0].setAttribute('name', question.id);
-                    break;
-            }
-            queryFirst('.fill-evaluation_question_description', question_template).textContent = question.description;
-            question_template_clone = document.importNode(question_template, true);
-            queryFirst('.fill-evaluation_questions', period_template_clone).appendChild(question_template_clone);
+    var question, question_template, question_template_clone;
+    for (var i = 0; i < questions.length; i++) {
+        question = questions[i];
+        switch (question.question_type_id) {
+            case "1":
+                question_template = getTemplate('evaluation_question_boolean');
+                question_template_clone = document.importNode(question_template, true);
+                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
+                question_template_clone.querySelectorAll('input')[1].setAttribute('name', question.id);
+                break;
+            case "2":
+                question_template = getTemplate('evaluation_question_integer');
+                question_template_clone = document.importNode(question_template, true);
+                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
+                break;
+            case "3":
+                question_template = getTemplate('evaluation_question_percent');
+                question_template_clone = document.importNode(question_template, true);
+                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
+                break;
+            case "4":
+                question_template = getTemplate('evaluation_question_phrase');
+                question_template_clone = document.importNode(question_template, true);
+                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
+                break;
+            case "5":
+                question_template = getTemplate('evaluation_question_text');
+                question_template_clone = document.importNode(question_template, true);
+                question_template_clone.querySelectorAll('textarea')[0].setAttribute('name', question.id);
         }
-        evaluation_periods_fill.appendChild(period_template_clone);
+        queryFirst('.fill-evaluation_question_description', question_template_clone).textContent = question.description;
+        evaluation_questions_fill.appendChild(question_template_clone);
     }
 }
 

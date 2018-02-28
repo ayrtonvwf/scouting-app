@@ -62,7 +62,7 @@
         </div>
         
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-6 col-md-push-3">
             <div class="box">
               <div class="box-header">Information</div>
               <div class="box-body">
@@ -100,59 +100,6 @@
               </div>
             </div>
           </div>
-          
-          <div class="col-md-6">
-            <div class="box">
-            <div class="box-header">Teams</div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-sm-12">
-                  <form onsubmit="join_team(event)">
-                    <br>
-                    <div class="row">
-                      <div class="col-sm-3"></div>
-                      <div class="col-sm-4 input">
-                        <input class="col-xs-8" "input" placeholder="Team number" required id="user-join_team_number">
-                      </div> 
-                      <div class="col-sm-2">
-                        <button class="btn-green" type="submit" style="margin: 0px">Join</button>
-                      </div>
-                    </div>
-                    <br>
-                  </form>
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Number</th>
-                        <th>&nbsp;</th>
-                      </tr>
-                    </thead>
-                    <template id="template-user_team">
-                      <tr>
-                        <td class="fill-user_team_name"></td>
-                        <td class="fill-user_team_number"></td>
-                        <td class="text-right">
-                          <button class="btn btn-small btn-red tooltip tooltip-left user_team_leave_button" title="Leave">
-                            <i class="fa fa-fw fa-times"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    </template>
-                    <tbody class="fill-user_teams">
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <td colspan="3"><b>Total:</b> <span class="row-counter"></span></td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-          </div>
-          
         </div>
       </main>
     </div>

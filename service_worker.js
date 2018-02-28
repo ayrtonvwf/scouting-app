@@ -9,9 +9,11 @@ var urlsToCache = [
 
     'css/style.css',
     
+    'js/create_account.js',
     'js/evaluation.js',
     'js/login.js',
     'js/main.js',
+    'js/reports.js',
     'js/user.js',
     
     'font-awesome/css/font-awesome.min.css',

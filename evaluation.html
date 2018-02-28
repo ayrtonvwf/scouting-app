@@ -82,7 +82,7 @@
             <form onsubmit="submit_evaluation(event)">
               <input type="hidden" name="team_id" id="input_evaluation_team_id">
               <input type="hidden" name="id" id="input_evaluation_id">
-              <div class="fill-evaluation_periods"></div>
+              <div class="fill-evaluation_questions"></div>
               <div id="evaluation_submit_button_wrapper" hidden>
                 <button class="btn-green pull-right btn-large" type="submit">Submit evaluation</button>
               </div>
@@ -141,13 +141,4 @@
       <textarea maxlength="1000" class="resize-v"></textarea>
     </label>
   </div>
-</template>
-
-<template id="template-evaluation_period">
-  <div class="box">
-    <div class="box-header fill-evaluation_period_name"></div>
-    <div class="box-body">
-      <div class="row fill-evaluation_questions"></div>
-    </div>
-  </div> 
 </template>

@@ -1,4 +1,4 @@
-const app_url = 'https://ayrtonvwf.github.io/scouting-app';
+const app_url = 'http://localhost:8000';
 const api_url = 'https://scouting-api.infomec.net.br';
 const db_name = 'scoutingdb';
 var db;
@@ -114,7 +114,6 @@ function dbInit() {
             db = db_open.result;
             db.createObjectStore('User', {keyPath: 'id'});
             db.createObjectStore('Team', {keyPath: 'id'});
-            db.createObjectStore('Period', {keyPath: 'id'});
             db.createObjectStore('QuestionType', {keyPath: 'id'});
             db.createObjectStore('Question', {keyPath: 'id'});
             db.createObjectStore('Evaluation', {keyPath: 'id'});
@@ -148,19 +147,13 @@ function loadDataToObjectStore(object_store_name, data) {
 
 function loadApiUser() {
     return api_request('user', 'GET').then(function(response) {
-        return loadDataToObjectStore('User', response.result);
+        return loadDataToObjectStore('User', [response.result]);
     });
 }
 
 function loadApiTeam() {
     return api_request('team', 'GET').then(function(response) {
         return loadDataToObjectStore('Team', response.result);
-    });
-}
-
-function loadApiPeriod() {
-    return api_request('period', 'GET').then(function(response) {
-        return loadDataToObjectStore('Period', response.result);
     });
 }
 
@@ -186,7 +179,6 @@ function loadApiData() {
     var promises = [
         loadApiUser(),
         loadApiTeam(),
-        loadApiPeriod(),
         loadApiQuestionType(),
         loadApiQuestion(),
         loadApiEvaluation()
@@ -211,18 +203,6 @@ function getCurrentUser() {
             getUser.result ? resolve(getUser.result) : reject();
         };
         getUser.onerror = reject;
-    });
-}
-
-function getPeriods() {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('Period', 'readonly');
-        var store = transaction.objectStore('Period');
-        var getPeriods = store.getAll();
-        getPeriods.onsuccess = function() {
-            getPeriods.result ? resolve(getPeriods.result) : reject();
-        };
-        getPeriods.onerror = reject;
     });
 }
 

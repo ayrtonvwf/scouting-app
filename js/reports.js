@@ -3,43 +3,25 @@ var selected_questions = [];
 var text_questions = [];
 
 var page_default_function = function() {
-    Promise.all([getPeriods(), getQuestions()]).then(build_questions_modal);
+    getQuestions().then(build_questions_modal);
 }
 
 function show_questions() {
-    getPeriods().then(function(periods) {
-        var fill_questions = getById('fill-selected_questions');
-        fill_questions.innerHTML = '';
+    var fill_questions = getById('fill-selected_questions');
+    fill_questions.innerHTML = '';
 
-        if (selected_questions.length) {
-            getById('reports_select_questions_alert').setAttribute('hidden', 'true');
-        } else {
-            getById('reports_select_questions_alert').removeAttribute('hidden');
-        }
-
-        for (var i = 0; i < periods.length; i++) {
-            periods[i].questions = selected_questions.filter(function(question) {
-                return question.period_id == periods[i].id;
-            });
-        }
-        
-        periods = periods.filter(function(period) {
-            return period.questions.length;
-        });
-        
-        var period_template = getTemplate('selected_period');
-        var question_template = getTemplate('selected_question');
-        var period_template_clone, question_template_clone;
-        periods.forEach(function(period) {
-            period_template_clone = document.importNode(period_template, true);
-            queryFirst('.fill-selected_period_name', period_template_clone).textContent = period.name;
-            fill_questions.appendChild(period_template_clone);
-            period.questions.forEach(function(question) {
-                question_template_clone = document.importNode(question_template, true);
-                queryFirst('.fill-selected_question_description', question_template_clone).textContent = question.description;
-                fill_questions.appendChild(question_template_clone);
-            });
-        });
+    if (selected_questions.length) {
+        getById('reports_select_questions_alert').setAttribute('hidden', 'true');
+    } else {
+        getById('reports_select_questions_alert').removeAttribute('hidden');
+    }
+    
+    var question_template = getTemplate('selected_question');
+    var question_template_clone;
+    selected_questions.forEach(function(question) {
+        question_template_clone = document.importNode(question_template, true);
+        queryFirst('.fill-selected_question_description', question_template_clone).textContent = question.description;
+        fill_questions.appendChild(question_template_clone);
     });
 }
 
@@ -176,38 +158,20 @@ function unselect_question(event) {
     });
 }
 
-function build_questions_modal(data) {
-    var periods = data[0];
-    var questions = data[1];
-    
-    for (var i = 0; i < periods.length; i++) {
-        periods[i].questions = questions.filter(function(question) {
-            return question.period_id == periods[i].id;
-        });
-    }
-
-    var period_template = getTemplate('reports_select_period');
+function build_questions_modal(questions) {
     var question_template = getTemplate('reports_select_question');
     var fill_select_questions = getById('fill-select_questions');
-    var period_template_clone, question_template_clone;
+    var question_template_clone;
 
-    periods.forEach(function(period) {
-        period_template_clone = document.importNode(period_template, true);
-        queryFirst('.fill-select_period_name', period_template_clone).textContent = period.name;
-        fill_select_questions.appendChild(period_template_clone);
-
-        period.questions.forEach(function(question) {
-            if (question.question_type_id >= 4) {
-                text_questions.push(question);
-                return;
-            }
-            question_template_clone = document.importNode(question_template, true);
-            queryFirst('.fill-select_question_description', question_template_clone).textContent = question.description;
-            queryFirst('input', question_template_clone).setAttribute('name', question.id);
-            fill_select_questions.appendChild(question_template_clone);
-        });
-
-        fill_select_questions.appendChild(document.createElement('br'));
+    questions.forEach(function(question) {
+        if (question.question_type_id >= 4) {
+            text_questions.push(question);
+            return;
+        }
+        question_template_clone = document.importNode(question_template, true);
+        queryFirst('.fill-select_question_description', question_template_clone).textContent = question.description;
+        queryFirst('input', question_template_clone).setAttribute('name', question.id);
+        fill_select_questions.appendChild(question_template_clone);
     });
 
     if (text_questions.length) {
