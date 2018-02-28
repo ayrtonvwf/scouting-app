@@ -329,7 +329,11 @@ function getOfflineEvaluations() {
 }
 
 function isOnLoginPage() {
-    return location.href == app_url + '/login.html';
+    var whitelist = [
+        app_url + '/login.html',
+        app_url + '/create_account.html'
+    ];
+    return whitelist.indexOf(location.href) != -1;
 }
 
 function requestLogin() {
