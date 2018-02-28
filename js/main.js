@@ -1,5 +1,5 @@
-const app_url = 'http://localhost:8000';
-const api_url = 'http://localhost/scouting';
+const app_url = 'https://ayrtonvwf.github.io/scouting-app';
+const api_url = 'https://scouting-api.infomec.net.br';
 const db_name = 'scoutingdb';
 var db;
 var api_headers = new Headers({'Accept': 'application/json'});
