@@ -1,4 +1,4 @@
-var cache_name = 'scouting-v0.3';
+var cache_name = 'scouting-v0.4';
 var urlsToCache = [
     '.',
     './create_account.html',
