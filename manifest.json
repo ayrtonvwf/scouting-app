@@ -4,8 +4,8 @@
     "theme_color": "#3c8dbc",
     "background_color": "#ecf0f5",
     "display": "standalone",
-    "Scope": "https://ayrtonvwf.github.com/scouting-app",
-    "start_url": "https://ayrtonvwf.github.com/scouting-app",
+    "scope": "./",
+    "start_url": "./",
     "icons": [
         {
         "src": "images/icons/icon-72x72.png",
