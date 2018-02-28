@@ -1,4 +1,4 @@
-var cache_name = 'scouting-v0.1';
+var cache_name = 'scouting-v0.2';
 var urlsToCache = [
     '.',
     './create_account.html',
@@ -9,15 +9,29 @@ var urlsToCache = [
     './user.html',
 
     './manifest.json',
+    './browserconfig.xml',
 
     './css/style.css',
 
+    './images/icons/icon-16x16.png',
+    './images/icons/icon-32x32.png',
+    './images/icons/icon-36x36.png',
+    './images/icons/icon-48x48.png',
+    './images/icons/icon-57x57.png',
+    './images/icons/icon-60x60.png',
+    './images/icons/icon-70x70.png',
     './images/icons/icon-72x72.png',
+    './images/icons/icon-76x76.png',
     './images/icons/icon-96x96.png',
+    './images/icons/icon-114x114.png',
+    './images/icons/icon-120x120.png',
     './images/icons/icon-128x128.png',
     './images/icons/icon-144x144.png',
+    './images/icons/icon-150x150.png',
     './images/icons/icon-152x152.png',
+    './images/icons/icon-180x180.png',
     './images/icons/icon-192x192.png',
+    './images/icons/icon-310x310.png',
     './images/icons/icon-384x384.png',
     './images/icons/icon-512x512.png',
     
