@@ -1,0 +1,9 @@
+{
+    "name": "Scouting APP",
+    "short_name": "Scouting",
+    "theme_color": "#3c8dbc",
+    "background_color": "#ecf0f5",
+    "display": "standalone",
+    "scope": "https://ayrtonvwf.github.com/scouting-app",
+    "start_url": "https://ayrtonvwf.github.com/scouting-app"
+}
