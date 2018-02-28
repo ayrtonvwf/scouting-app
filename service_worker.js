@@ -1,14 +1,26 @@
-var cache_name = 'scouting-cache';
+var cache_name = 'scouting-v0.1';
 var urlsToCache = [
     '.',
+    './create_account.html',
     './evaluation.html',
     './index.html',
     './login.html',
     './reports.html',
     './user.html',
 
+    './manifest.json',
+
     './css/style.css',
 
+    './images/icons/icon-72x72.png',
+    './images/icons/icon-96x96.png',
+    './images/icons/icon-128x128.png',
+    './images/icons/icon-144x144.png',
+    './images/icons/icon-152x152.png',
+    './images/icons/icon-192x192.png',
+    './images/icons/icon-384x384.png',
+    './images/icons/icon-512x512.png',
+    
     './js/create_account.js',
     './js/evaluation.js',
     './js/login.js',
