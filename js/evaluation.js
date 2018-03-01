@@ -25,9 +25,12 @@ function prepare_evaluation_form(team) {
         var evaluation = data[1].find(function(evaluation) {
             return evaluation.self == "1" && evaluation.team_id == team.id;
         });
+        
         if (evaluation) {
             getById('input_evaluation_id').value = evaluation.id;
             populate_evaluation_answers(evaluation.answers);
+        } else {
+            getById('input_evaluation_id').value = '';
         }
         getById('input_evaluation_team_id').value = team.id;
     });
