@@ -63,6 +63,8 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
   <script src="js/main.js"></script>
+  <script src="js/tablesort.min.js"></script>
+  <script src="js/tablesort.number.min.js"></script>
   <script src="js/reports.js"></script>
 </head>
 
@@ -185,26 +187,20 @@
           <div class="box">
             <div class="box-header"></div>
             <div class="box-body">
+              <div class="row"></div>
+                <div class="alert alert-blue col-sm-6 col-sm-push-3 text-center">Click on the question to reorder.</div>
+              </div>
               <div class="row">
                 <div class="col-sm-12">
-                  <table class="table">
+                  <table class="table" id="report_table">
                     <thead>
-                      <template id="template-report_question">
-                        <th class="fill-report_question_description"></th>
-                      </template>
                       <tr class="fill-header_questions"></tr>
                     </thead>
-                    <template id="template-report_answer_result">
-                      <td class="fill-report_answer_result"></td>
-                    </template>
-                    <template id="template-report_answer">
-                      <tr class="fill-report_answer"></tr>
-                    </template>
                     <tbody class="fill-report_answers"></tbody>
                     <tfoot>
                       <tr>
                         <td colspan="9">
-                          <b>Total:</b> 3
+                          <b>Total:</b> <span class="row-counter"></span>
                         </td>
                       </tr>
                     </tfoot>
@@ -234,6 +230,15 @@
     <div class="modal-footer text-right"><a class="btn-green" href="#">Confirm</a></div>
   </div>
   <a class="modal-close" href="#"></a>   
+  <template id="template-report_question">
+    <th class="fill-report_question_description"></th>
+  </template>
+  <template id="template-report_answer_result">
+    <td class="fill-report_answer_result"></td>
+  </template>
+  <template id="template-report_answer">
+    <tr class="fill-report_answer"></tr>
+  </template>
 </body>
 
 </html>

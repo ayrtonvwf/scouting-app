@@ -1,4 +1,4 @@
-var cache_name = 'scouting-v0.7';
+var cache_name = 'scouting-v0.8';
 var urlsToCache = [
     '.',
     './create_account.html',
@@ -40,6 +40,8 @@ var urlsToCache = [
     './js/login.js',
     './js/main.js',
     './js/reports.js',
+    './js/tablesort.min.js',
+    './js/tablesort.number.min.js',
     './js/user.js',
     
     './font-awesome/css/font-awesome.min.css',

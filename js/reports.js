@@ -82,7 +82,7 @@ function load_report() {
             answer_template_clone = document.importNode(answer_template, true);
             answer_result_template_clone = document.importNode(answer_result_template, true);
             queryFirst('.fill-report_answer_result', answer_result_template_clone).textContent = team.number;
-            answer_template_clone.appendChild(answer_result_template_clone);
+            queryFirst('.fill-report_answer', answer_template_clone).appendChild(answer_result_template_clone);
             
             selected_questions.forEach(function(selected_question) {
                 answer_result_template_clone = document.importNode(answer_result_template, true);
@@ -108,13 +108,14 @@ function load_report() {
                     }
                 }
                 queryFirst('.fill-report_answer_result', answer_result_template_clone).textContent = answer_result;
-                answer_template_clone.appendChild(answer_result_template_clone);
+                queryFirst('.fill-report_answer', answer_template_clone).appendChild(answer_result_template_clone);
             });
 
             report_fill.appendChild(answer_template_clone);
         });
     });
-
+    
+    new Tablesort(getById('report_table'));
     getById('report_result_box').removeAttribute('hidden');
 }
 
