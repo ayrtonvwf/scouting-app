@@ -61,7 +61,7 @@ window.onload = function () {
                                 return answer;
                             });
 
-                            var positive_percent = (positive/answers.length)*100;
+                            var positive_percent = (positive.length/answers.length)*100;
 
                             return positive_percent+'%';
                         }
