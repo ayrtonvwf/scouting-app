@@ -41,6 +41,7 @@ var urlsToCache = [
     './js/main.js',
     './js/reports.js',
     './js/user.js',
+    './js/vue.js',
     
     './font-awesome/css/font-awesome.min.css',
     './font-awesome/fonts/fontawesome-webfont.eot',
@@ -63,7 +64,7 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
         caches.match(event.request).then(function(response) {
             if (response) {
-                return response;
+                // return response;
             }
             return fetch(event.request);
         })

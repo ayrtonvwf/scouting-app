@@ -62,178 +62,167 @@
 
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+  <script src="js/vue.js"></script>
   <script src="js/main.js"></script>
   <script src="js/reports.js"></script>
 </head>
 
 <body>
-  <header class="header">
-    <a class="header-button main-button" href="index.html">Scouting App</a>
-    <a class="header-button menu-toggle" href="#menu">
-      <i class="fa fa-bars"></i>
-    </a>
-    <div class="header-button" id="loading_status" hidden>
-      <i class="fa fa-fw fa-spin fa-refresh"></i>
-    </div>
-    <a class="header-button" href="#pane-tickets">
-      <i class="fa fa-calendar"></i>
-      <span class="header-button-label-red fill-notifications_counter hidden"></span>
-    </a>
-    <a class="header-button fill-user_name" href="#pane-user"></a>
-    <div class="header-pane-holder" id="pane-tickets">
-      <a class="header-pane-close" href="#"></a>
-      <template id="template-notification">
-        <li>
-          <a class="ticket-link" href="#">
-            <span class="ticket-title fill-notification_title"></span>
-            <span class="ticket-description fill-notification_description"></span>
-          </a>
-        </li>
-      </template>
-      <ul class="header-pane ticket-pane fill-notifications"></ul>
-    </div>
-    <div class="header-pane-holder" id="pane-user">
-      <a class="header-pane-close" href="#"></a>
-      <div class="header-pane user-pane">
-        <div class="user-background">
-          <i class="fa fa-user user-icon"></i>
-          <span class="fill-user_name"></span>
-        </div>
-        <div class="user-buttons">
-          <a class="user-btn" href="#" onclick="logout()">Log out</a>
-        </div>
-      </div>
-    </div>
-  </header>
-  <div class="container">
-    <nav class="menu" id="menu">
-      <a class="menu-close header-button" href="#">
-        <i class="fa fa-bars"></i>
+  <div id="app">
+    <header class="header">
+      <a class="header-button main-button" href="index.html">Scouting App</a>
+      <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
+      <div class="header-button" v-if="is_loading"><i class="fa fa-fw fa-spin fa-refresh"></i></div>
+      <a class="header-button" href="#pane-tickets" v-if="offline_evaluations.length">
+        <i class="fa fa-calendar"></i>
+        <span class="header-button-label-red">{{ offline_evaluations.length }}</span>
       </a>
-      <a class="menu-link" href="user.html">
-        <i class="fa fa-fw fa-user"></i> User</a>
-      <a class="menu-link" href="evaluation.html">
-        <i class="fa fa-fw fa-pencil"></i> Evaluation</a>
-      <a class="menu-link menu-active" href="reports.html">
-        <i class="fa fa-fw fa-line-chart"></i> Reports</a>
-    </nav>
-    <main class="content">
-      <div class="row">
-        <div class="col-xs-12">
-          <h1 class="content-title">
-            <i class="fa fa-line-chart"></i> Reports</h1>
+      <a class="header-button" href="#pane-user">{{ user.name }}</a>
+      <div class="header-pane-holder" id="pane-tickets" v-if="offline_evaluations.length">
+        <a class="header-pane-close" href="#"></a>
+        <ul class="header-pane ticket-pane fill-notifications">
+          <li v-for="offline_evaluation in offline_evaluations">
+            <a class="ticket-link" href="#" onclick="resubmit_evaluation(this)" v-bind:data-id="offline_evaluation.team_id">
+              <span class="ticket-title fill-notification_title">Submit {{ getTeamById(offline_evaluation.team_id).name }} evaluation</span>
+              <span class="ticket-description fill-notification_description">
+                You made this evaluation offline.<br>
+                Click here to submit it.
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="header-pane-holder" id="pane-user">
+        <a class="header-pane-close" href="#"></a>
+        <div class="header-pane user-pane">
+          <div class="user-background">
+            <i class="fa fa-user user-icon"></i> {{ user.name }}
+          </div>
+          <div class="user-buttons">
+            <a class="user-btn" href="#" onclick="logout()">Log out</a>
+          </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box">
-            <div class="box-header">Questions</div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-xs-12">
-                  <template id="template-selected_question">
-                    <p class="fill-selected_question_description"></p>
-                  </template>
-                  <div id="fill-selected_questions"></div>
-                  <div class="alert alert-blue text-center" id="reports_select_questions_alert">Select some questions to see the report</div>
-                  <div class="text-right">
-                    <a href="#modal-change-questions" class="btn-green">Select questions</a>
+    </header>
+    <div class="container">
+      <nav class="menu" id="menu">
+        <a class="menu-close header-button" href="#">
+          <i class="fa fa-bars"></i>
+        </a>
+        <a class="menu-link" href="user.html">
+          <i class="fa fa-fw fa-user"></i> User</a>
+        <a class="menu-link" href="evaluation.html">
+          <i class="fa fa-fw fa-pencil"></i> Evaluation</a>
+        <a class="menu-link menu-active" href="reports.html">
+          <i class="fa fa-fw fa-line-chart"></i> Reports</a>
+      </nav>
+      <main class="content">
+        <div class="row">
+          <div class="col-xs-12">
+            <h1 class="content-title">
+              <i class="fa fa-line-chart"></i> Reports</h1>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="box">
+              <div class="box-header">Questions</div>
+              <div class="box-body">
+                <div class="row">
+                  <div class="col-xs-12">
+                    <p v-for="question in selected_questions">{{ question.description }}</p>
+                    <div v-if="!selected_questions.length" class="alert alert-blue text-center">No questions selected.</div>
+                    <div class="text-right">
+                      <a href="#modal-change-questions" class="btn-green">Select questions</a>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-6">
-          <div class="box">
-            <div class="box-header">Teams</div>
-            <div class="box-body">
-              <br>
-              <div class="row">
-                <form onsubmit="select_report_team(event)">
-                  <div class="col-sm-3"></div>
-                  <div class="col-sm-4 input">
-                    <input class="col-xs-8" "input" placeholder="Team number" required>
-                  </div>
-                  <div class="col-sm-2">
-                    <button class="btn-green" type="submit" style="margin: 0px">Add</button>
-                  </div>
-                </form>
-              </div>
-              <br>
-              <div class="row">
-                <template id="template-selected_team">
-                  <div class="col-sm-4">
+          <div class="col-md-6">
+            <div class="box">
+              <div class="box-header">Teams</div>
+              <div class="box-body">
+                <br>
+                <div class="row">
+                  <form onsubmit="select_team(event)">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-4 input">
+                      <input class="col-xs-8" type="number" name="team_number" min="1" v-bind:max="max_team_number" placeholder="Team number" required>
+                    </div>
+                    <div class="col-sm-2">
+                      <button class="btn-green" type="submit" style="margin: 0px">Add</button>
+                    </div>
+                  </form>
+                </div>
+                <br>
+                <div class="row">
+                  <div v-for="team in selected_teams" class="col-sm-4">
                     <p>
-                      <button class="btn-red btn-small fa fa-times" type="button"></button>
-                      <span class="fill-selected_team_name"></span> -
-                      <span class="fill-selected_team_number"></span>
+                      <button class="btn-red btn-small fa fa-times" type="button" onclick="unselect_team(event)" v-bind:data-id="team.id"></button>
+                      {{ team.number }} - {{ team.name }}
                     </p>
                   </div>
-                </template>
-                <div class="col-xs-12" id="reports_select_teams_alert">
-                  <div class="alert alert-blue text-center">No team selected. Showing first 30</div>
-                </div>
-                <div class="fill-selected_teams"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row" id="report_result_box" hidden>
-        <div class="col-md-12">
-          <div class="box">
-            <div class="box-header"></div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-sm-12">
-                  <table class="table">
-                    <thead>
-                      <template id="template-report_question">
-                        <th class="fill-report_question_description"></th>
-                      </template>
-                      <tr class="fill-header_questions"></tr>
-                    </thead>
-                    <template id="template-report_answer_result">
-                      <td class="fill-report_answer_result"></td>
-                    </template>
-                    <template id="template-report_answer">
-                      <tr class="fill-report_answer"></tr>
-                    </template>
-                    <tbody class="fill-report_answers"></tbody>
-                    <tfoot>
-                      <tr>
-                        <td colspan="9">
-                          <b>Total:</b> 3
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
+                  <div v-if="!selected_teams.length" class="col-xs-12">
+                    <div class="alert alert-blue text-center">No team selected.</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
-  </div>
-  
-  <div class="modal" id="modal-change-questions">
-    <h2 class="modal-header">Select questions</h2>
-    <div class="modal-body">
-      <template id="template-reports_select_question">
-        <p>
-          <label>
-            <input type="checkbox" onclick="select_question(event)"> <span class="fill-select_question_description"></span>
-          </label>
-        </p>
-      </template>
-      <form id="fill-select_questions"></form>
-      <a href="#" id="text_questions_link"><span class="fill-ignored_questions"></span> hidden text questions.</a>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="box">
+              <div class="box-header">Report</div>
+              <div class="box-body">
+                <div class="row">
+                  <div v-if="!selected_teams.length || !selected_questions.length" class="col-md-6 col-md-push-3">
+                    <div class="alert alert-blue text-center">Select some teams and questions to see the report.</div>
+                  </div>
+                  <div class="col-sm-12" v-if="selected_teams.length && selected_questions.length">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Team</th>
+                          <th v-for="question in selected_questions">{{ question.description }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="team in selected_teams">
+                          <td>{{ team.number }}</td>
+                          <td v-for="question in selected_questions">{{ getReport(team.id, question.id) }}</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td v-bind:colspan="selected_questions.length+1">
+                            <b>Total:</b> <span class="row-counter"></span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-    <div class="modal-footer text-right"><a class="btn-green" href="#">Confirm</a></div>
-  </div>
-  <a class="modal-close" href="#"></a>   
+    
+    <div class="modal" id="modal-change-questions">
+      <h2 class="modal-header">Select questions</h2>
+      <div class="modal-body">
+        <p v-for="question in questions">
+          <label v-if="question.question_type_id < 4"><input type="checkbox" v-bind:name="question.id" onchange="select_question(event)"> {{ question.description }}</label>
+        </p>
+      </div>
+      <div class="modal-footer text-right"><a class="btn-green" href="#">Confirm</a></div>
+    </div>
+    <a class="modal-close" href="#"></a>
+  </div>  
 </body>
 
 </html>

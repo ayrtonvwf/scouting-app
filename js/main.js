@@ -1,27 +1,83 @@
-const app_url = 'https://ayrtonvwf.github.io/scouting-app';
+const app_url = 'http://localhost:8000';
 const api_url = 'https://scouting-api.infomec.net.br';
 const db_name = 'scoutingdb';
-var db;
 var api_headers = new Headers({'Accept': 'application/json'});
+var db, app;
 
 window.onload = function () {
     registerServiceWorker();
+    
     var db_init_promise = dbInit();
-
     if (isOnLoginPage()) {
         return;
     }
     
-    showLoading();
-    requestLogin();
-
     db_init_promise
-        .then(loadLayoutData)
-        .then(function() {
-            if (typeof page_default_function === "function") {
-                page_default_function();
-            }
-            hideLoading();
+        .then(requestLogin)
+        .then(loadData)
+        .then(function(data) {
+            app = new Vue({
+                el: '#app',
+                data: data,
+                methods: {
+                    getTeamById: function(id) {
+                        return this.teams.find(function(team) {
+                            return team.id == id;
+                        });
+                    },
+                    getAnswer: function(question_id) {
+                        if (!this.evaluation) {
+                            return undefined;
+                        }
+
+                        var answer = this.evaluation.answers.find(function(answer) {
+                            return answer.question_id == question_id;
+                        });
+
+                        return answer ? answer.value : undefined;
+                    },
+                    getReport: function(team_id, question_id) {
+                        var evaluations = app.evaluations.filter(function(evaluation) {
+                            return evaluation.team_id == team_id;
+                        });
+
+                        var answers = evaluations.map(function(evaluation) {
+                            var answer = evaluation.answers.find(function(answer) {
+                                return answer.question_id == question_id;
+                            });
+                            return parseInt(answer.value);
+                        });
+
+                        if (!answers.length) {
+                            return '-';
+                        }
+
+                        var question = app.questions.find(function(question) {
+                            return question.id == question_id;
+                        });
+
+                        if (question.question_type_id == 1) {
+                            var positive = answers.filter(function(answer) {
+                                return answer;
+                            });
+
+                            var positive_percent = (positive/answers.length)*100;
+
+                            return positive_percent+'%';
+                        }
+
+                        var sum = 0;
+                        answers.forEach(function(answer) {
+                            sum += answer;
+                        });
+
+                        return sum/answers.length;
+                    },
+                    log: function(data) {
+                        console.log(data);
+                    }
+                }
+            });
         });
 }
 
@@ -29,61 +85,47 @@ function registerServiceWorker() {
     navigator.serviceWorker.register('service_worker.js');
 }
 
-function loadLayoutData() {
-    return getCurrentUser()
-        .then(function(user) {
-            fillInfo('user_name', user.name);
-            var elements = getByClass('fill-user_name');
-            for (i = 0; i < elements.length; i++) {
-                elements[i].innerHTML = user.name;
+function loadData() {
+    var promises = [
+        getCurrentUser(),
+        getAllFromDb('Team'),
+        getAllFromDb('QuestionType'),
+        getAllFromDb('Question'),
+        getAllFromDb('Evaluation'),
+        getAllFromDb('OfflineEvaluation')
+    ];
+
+    return Promise.all(promises).then(function(data) {
+        var max_team_number = 0;
+        data[1].forEach(function(team) {
+            var team_number = parseInt(team.number);
+            if (max_team_number < team_number) {
+                max_team_number = team_number;
             }
-        }).then(loadNotifications);
-        
-}
-
-function loadNotifications() {
-    return getOfflineEvaluations().then(function(offline_evaluations) {
-        var counter = queryFirst('.fill-notifications_counter');
-        var notification_template = getTemplate('notification');
-
-        if (!offline_evaluations.length) {
-            counter.innerHTML = '0';
-            counter.classList.add('hidden');
-            var fill_notifications = queryFirst('.fill-notifications');
-            fill_notifications.innerHTML = '';
-            var notification_template_clone = document.importNode(notification_template, true);
-            queryFirst('.fill-notification_title', notification_template_clone).innerHTML = 'Theres nothing here';
-            queryFirst('.fill-notification_description', notification_template_clone).innerHTML = 'You have no notifications';
-            fill_notifications.appendChild(notification_template_clone);
-            return;
-        }
-
-        counter.innerHTML = offline_evaluations.length;
-        counter.classList.remove('hidden');
-
-        var promises = [];
-        offline_evaluations.forEach(function(offline_evaluation) {
-            promises.push(getTeamById(offline_evaluation.team_id).then(function(team) {
-                var notification_template_clone = document.importNode(notification_template, true);
-                queryFirst('.fill-notification_title', notification_template_clone).innerHTML = 'Submit '+team.name+' evaluation';
-                queryFirst('.fill-notification_description', notification_template_clone).innerHTML = 'You made this evaluation offline.<br>Click here to submit it.';
-                queryFirst('a', notification_template_clone).setAttribute('onclick', 'resubmit_evaluation('+offline_evaluation.team_id+')');
-                return notification_template_clone;
-            }));
         });
-        return Promise.all(promises).then(function(notifications) {
-            var fill_notifications = queryFirst('.fill-notifications');
-            fill_notifications.innerHTML = '';
-            notifications.forEach(function(notification) {
-                fill_notifications.appendChild(notification);
-            });
-        });
+
+        return {
+            user: data[0],
+            teams: data[1],
+            question_types: data[2],
+            questions: data[3],
+            evaluations: data[4],
+            offline_evaluations: data[5],
+            is_loading: false,
+            max_team_number: max_team_number,
+            selected_team: null,
+            evaluation: null,
+            selected_questions: [],
+            selected_teams: [],
+            reports: []
+        };
     });
 }
 
-function resubmit_evaluation(team_id) {
-    team_id = team_id+""; // to string
+function resubmit_evaluation(element) {
+    var team_id = element.dataset.id;
 
+    showLoading();
     getOfflineEvaluationByTeamId(team_id).then(function(data) {
         var method = parseInt(data.id) ? 'PUT' : 'POST';
     
@@ -92,19 +134,13 @@ function resubmit_evaluation(team_id) {
                 alert('Theres something wrong with your answers. Try again'); 
             } else {
                 alert('Evaluation submited!');
-                return deleteOfflineEvaluationByTeamId(team_id).then(loadNotifications);
+                return deleteOfflineEvaluationByTeamId(team_id);
             }
         }).catch(function(error) {
+            hideLoading();
             alert('Unable to submit the evaluation. Try again later');
         }).then(loadApiEvaluation);
     });
-}
-
-function fillInfo(name, info) {
-    var elements = getByClass('fill-'+name);
-    for (i = 0; i < elements.length; i++) {
-        elements[i].innerHTML = info;
-    }
 }
 
 function dbInit() {
@@ -145,43 +181,22 @@ function loadDataToObjectStore(object_store_name, data) {
     });
 }
 
-function loadApiUser() {
-    return api_request('user', 'GET').then(function(response) {
-        return loadDataToObjectStore('User', [response.result]);
-    });
-}
-
-function loadApiTeam() {
-    return api_request('team', 'GET').then(function(response) {
-        return loadDataToObjectStore('Team', response.result);
-    });
-}
-
-function loadApiQuestionType() {
-    return api_request('question_type', 'GET').then(function(response) {
-        return loadDataToObjectStore('QuestionType', response.result);
-    });
-}
-
-function loadApiQuestion() {
-    return api_request('question', 'GET').then(function(response) {
-        return loadDataToObjectStore('Question', response.result);
-    });
-}
-
-function loadApiEvaluation() {
-    return api_request('evaluation', 'GET').then(function(response) {
-        return loadDataToObjectStore('Evaluation', response.result);
+function loadApiToObjectStore(resource_name, object_store_name) {
+    return api_request(resource_name, 'GET').then(function(response) {
+        if (!(response.result instanceof Array)) {
+            response.result = [response.result];
+        }
+        return loadDataToObjectStore(object_store_name, response.result);
     });
 }
 
 function loadApiData() {
     var promises = [
-        loadApiUser(),
-        loadApiTeam(),
-        loadApiQuestionType(),
-        loadApiQuestion(),
-        loadApiEvaluation()
+        loadApiToObjectStore('user', 'User'),
+        loadApiToObjectStore('team', 'Team'),
+        loadApiToObjectStore('question_type', 'QuestionType'),
+        loadApiToObjectStore('question', 'Question'),
+        loadApiToObjectStore('evaluation', 'Evaluation')
     ];
 
     return Promise.all(promises);
@@ -206,91 +221,17 @@ function getCurrentUser() {
     });
 }
 
-function getQuestions() {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('Question', 'readonly');
-        var store = transaction.objectStore('Question');
-        var getQuestions = store.getAll();
-        getQuestions.onsuccess = function() {
-            getQuestions.result ? resolve(getQuestions.result) : reject();
+function getAllFromDb(object_store_name) {
+    return new Promise(function(resolve) {
+        var transaction = db.transaction(object_store_name, 'readonly');
+        var store = transaction.objectStore(object_store_name);
+        var operation = store.getAll();
+        operation.onsuccess = function() {
+            resolve(operation.result);
         };
-        getQuestions.onerror = reject;
-    });
-}
-
-function getQuestionById(id) {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('Question', 'readonly');
-        var store = transaction.objectStore('Question');
-        var getQuestion = store.get(id);
-        getQuestion.onsuccess = function() {
-            getQuestion.result ? resolve(getQuestion.result) : reject();
+        operation.onerror = function() {
+            throw 'Cannot load all from '+object_store_name;
         };
-        getQuestion.onerror = reject;
-    });
-}
-
-function getTeamByNumber(number) {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('Team', 'readonly');
-        var store = transaction.objectStore('Team');
-        var getTeams = store.getAll();
-        getTeams.onsuccess = function() {
-            var team = getTeams.result.find(function(team) {
-                return team.number == number;
-            });
-
-            return team ? resolve(team) : reject();
-        };
-        getTeams.onerror = function() {
-            return reject();
-        };
-    });
-}
-
-function getTeamById(id) {
-    id = id+""; // to string;
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('Team', 'readonly');
-        var store = transaction.objectStore('Team');
-        var getTeam = store.get(id);
-        getTeam.onsuccess = function() {
-            return getTeam.result ? resolve(getTeam.result) : reject();
-        };
-        getTeam.onerror = reject;
-    });
-}
-
-function getEvaluations() {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('Evaluation', 'readonly');
-        var store = transaction.objectStore('Evaluation');
-        var getEvaluations = store.getAll();
-        getEvaluations.onsuccess = function() {
-            getEvaluations.result ? resolve(getEvaluations.result) : reject();
-        };
-        getEvaluations.onerror = reject;
-    });
-}
-
-function getEvaluationsByTeamId(team_id) {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('Evaluation', 'readonly');
-        var store = transaction.objectStore('Evaluation');
-        var getEvaluations = store.getAll();
-        getEvaluations.onsuccess = function() {
-            if (!getEvaluations.result.length) {
-                reject();
-                return;
-            }
-            
-            var evaluations = getEvaluations.result.filter(function(evaluation) {
-                return evaluation.team_id == team_id;
-            });
-            
-            resolve(evaluations);            
-        };
-        getEvaluations.onerror = reject;
     });
 }
 
@@ -312,18 +253,6 @@ function deleteOfflineEvaluationByTeamId(team_id) {
         var store = transaction.objectStore('OfflineEvaluation');
         var getOfflineEvaluations = store.delete(team_id);
         getOfflineEvaluations.onsuccess = resolve;
-        getOfflineEvaluations.onerror = reject;
-    });
-}
-
-function getOfflineEvaluations() {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('OfflineEvaluation', 'readonly');
-        var store = transaction.objectStore('OfflineEvaluation');
-        var getOfflineEvaluations = store.getAll();
-        getOfflineEvaluations.onsuccess = function() {
-            getOfflineEvaluations.result ? resolve(getOfflineEvaluations.result) : reject();
-        };
         getOfflineEvaluations.onerror = reject;
     });
 }
@@ -405,31 +334,9 @@ function logout() {
 }
 
 function showLoading() {
-    getById('loading_status').removeAttribute('hidden');
+    app.is_loading = true;
 }
 
 function hideLoading() {
-    getById('loading_status').setAttribute('hidden', '');
-}
-
-function getTemplate(name) {
-    var id = 'template-'+name;
-    return getById(id).content;
-}
-
-function queryFirst(selector, context) {
-    if (context == undefined) {
-        context = document;
-    }
-
-    var elements = context.querySelectorAll(selector);
-    return elements.length ? elements[0] : undefined;
-}
-
-function getById(id) {
-    return document.getElementById(id);
-}
-
-function getByClass(class_name) {
-    return document.getElementsByClassName(class_name);
+    app.is_loading = false;
 }

@@ -1,100 +1,28 @@
-var page_default_function = function() {
-    
-}
-
 function select_evaluation_team(event) {
     event.preventDefault();
-    var team_number = event.target.querySelectorAll('input')[0].value;
-    getTeamByNumber(team_number).then(function(team) {
-        prepare_evaluation_form(team);
-        getById('evaluation-select_team_alert').setAttribute('hidden', true);
-    }).catch(function() {
+    var form_data = new FormData(event.target);
+    var team_number = form_data.get('team_number');
+    var team = app.teams.find(function(team) {
+        return team.number == team_number;
+    });
+
+    if (!team) {
         alert('Team not found');  
-    });
-}
-
-function prepare_evaluation_form(team) {
-    Promise.all([getQuestions(), getEvaluations(), team]).then(function(data) {
-        var questions = data[0];
-        var team = data[2];
-
-        getById('evaluation_submit_button_wrapper').removeAttribute('hidden');
-
-        build_evaluation_questions(questions);
-        
-        var evaluation = data[1].find(function(evaluation) {
-            return evaluation.self == "1" && evaluation.team_id == team.id;
-        });
-        
-        if (evaluation) {
-            getById('input_evaluation_id').value = evaluation.id;
-            populate_evaluation_answers(evaluation.answers);
-        } else {
-            getById('input_evaluation_id').value = '';
-        }
-        getById('input_evaluation_team_id').value = team.id;
-    });
-}
-
-function build_evaluation_questions(questions) {
-    var evaluation_questions_fill = queryFirst('.fill-evaluation_questions');
-    evaluation_questions_fill.innerHTML = '';
-
-    var question, question_template, question_template_clone;
-    for (var i = 0; i < questions.length; i++) {
-        question = questions[i];
-        switch (question.question_type_id) {
-            case "1":
-                question_template = getTemplate('evaluation_question_boolean');
-                question_template_clone = document.importNode(question_template, true);
-                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
-                question_template_clone.querySelectorAll('input')[1].setAttribute('name', question.id);
-                break;
-            case "2":
-                question_template = getTemplate('evaluation_question_integer');
-                question_template_clone = document.importNode(question_template, true);
-                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
-                break;
-            case "3":
-                question_template = getTemplate('evaluation_question_percent');
-                question_template_clone = document.importNode(question_template, true);
-                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
-                break;
-            case "4":
-                question_template = getTemplate('evaluation_question_phrase');
-                question_template_clone = document.importNode(question_template, true);
-                question_template_clone.querySelectorAll('input')[0].setAttribute('name', question.id);
-                break;
-            case "5":
-                question_template = getTemplate('evaluation_question_text');
-                question_template_clone = document.importNode(question_template, true);
-                question_template_clone.querySelectorAll('textarea')[0].setAttribute('name', question.id);
-        }
-        queryFirst('.fill-evaluation_question_description', question_template_clone).textContent = question.description;
-        evaluation_questions_fill.appendChild(question_template_clone);
     }
-}
 
-function populate_evaluation_answers(answers) {
-    answers.forEach(function(answer) {
-        getQuestionById(answer.question_id).then(function(question) {
-            switch (question.question_type_id) {
-                case "1":
-                    if (parseInt(answer.value)) {
-                        queryFirst('input[name="'+question.id+'"][value="1"]').setAttribute('checked', true);
-                        queryFirst('input[name="'+question.id+'"][value="0"]').removeAttribute('checked');
-                    } else {
-                        queryFirst('input[name="'+question.id+'"][value="0"]').setAttribute('checked', true);
-                        queryFirst('input[name="'+question.id+'"][value="1"]').removeAttribute('checked');
-                    }
-                    break;
-                case "5":
-                    queryFirst('textarea[name="'+question.id+'"]').innerHTML = answer.value;
-                    break;
-                default:
-                    queryFirst('input[name="'+question.id+'"]').value = answer.value;
-            }
-        });
+    app.selected_team = team;
+
+    var offline_evaluation = app.offline_evaluations.find(function(offline_evaluation) {
+        return offline_evaluation.team_id == team.id;
+    });
+
+    if (offline_evaluation) {
+        app.evaluation = offline_evaluation;
+        return;
+    }
+
+    app.evaluation = app.evaluations.find(function(evaluation) {
+        return evaluation.self && evaluation.team_id == team.id;
     });
 }
 
@@ -117,29 +45,16 @@ function submit_evaluation(event) {
     });
 
     api_request('evaluation', method, data, false).then(function(response) {
-        if (!response.ok) {
-            alert('Theres something wrong with your answers. Try again'); 
-        } else {
-            alert('Evaluation submited!');
-        }
+        response.ok
+            ? alert('Evaluation submited!')
+            : alert('Theres something wrong with your answers. Try again');
     }).catch(function(error) {
-        save_offline_evaluation(data).then(function() {
+        loadDataToObjectStore('OfflineEvaluation', data).then(function() {
             alert('Unable to submit the evaluation. Your answers were saved and will be re-submited again when online');
-        }).then(loadNotifications)
-        .catch(function() {
+        }).catch(function() {
             alert('Unable to submit the evaluation, and also unable to save it for re-submiting later');
         });
-    }).then(loadApiEvaluation);
-}
-
-function save_offline_evaluation(evaluation) {
-    return new Promise(function(resolve, reject) {
-        var transaction = db.transaction('OfflineEvaluation', 'readwrite');
-        var store = transaction.objectStore('OfflineEvaluation');
-        putEvaluation = store.put(evaluation);
-        putEvaluation.onsuccess = resolve;
-        putEvaluation.onerror = function(error) {
-            throw error;
-        };
+    }).then(function() {
+        loadApiToObjectStore('evaluation', 'Evaluation');
     });
 }

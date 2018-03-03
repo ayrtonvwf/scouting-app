@@ -62,54 +62,61 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+    <script src="js/vue.js"></script>
     <script src="js/main.js"></script>
   </head>
   <body>
-    <header class="header">
-      <a class="header-button main-button" href="index.html">Scouting App</a>
-      <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
-      <div class="header-button" id="loading_status" hidden><i class="fa fa-fw fa-spin fa-refresh"></i></div>
-      <a class="header-button" href="#pane-tickets"><i class="fa fa-calendar"></i><span class="header-button-label-red fill-notifications_counter hidden"></span></a>
-      <a class="header-button fill-user_name" href="#pane-user"></a>
-      <div class="header-pane-holder" id="pane-tickets">
-        <a class="header-pane-close" href="#"></a>
-        <template id="template-notification">
-          <li>
-            <a class="ticket-link" href="#">
-              <span class="ticket-title fill-notification_title"></span>
-              <span class="ticket-description fill-notification_description"></span>
-            </a>
-          </li>
-        </template>
-        <ul class="header-pane ticket-pane fill-notifications"></ul>
-      </div>
-      <div class="header-pane-holder" id="pane-user">
-        <a class="header-pane-close" href="#"></a>
-        <div class="header-pane user-pane">
-          <div class="user-background">
-            <i class="fa fa-user user-icon"></i>
-            <span class="fill-user_name"></span>
-          </div>
-          <div class="user-buttons">
-            <a class="user-btn" href="#" onclick="logout()">Log out</a>
-          </div>
+    <div id="app">
+      <header class="header">
+        <a class="header-button main-button" href="index.html">Scouting App</a>
+        <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
+        <div class="header-button" v-if="is_loading"><i class="fa fa-fw fa-spin fa-refresh"></i></div>
+        <a class="header-button" href="#pane-tickets" v-if="offline_evaluations.length">
+          <i class="fa fa-calendar"></i>
+          <span class="header-button-label-red">{{ offline_evaluations.length }}</span>
+        </a>
+        <a class="header-button" href="#pane-user">{{ user.name }}</a>
+        <div class="header-pane-holder" id="pane-tickets" v-if="offline_evaluations.length">
+          <a class="header-pane-close" href="#"></a>
+          <ul class="header-pane ticket-pane fill-notifications">
+            <li v-for="offline_evaluation in offline_evaluations">
+              <a class="ticket-link" href="#" onclick="resubmit_evaluation(this)" v-bind:data-id="offline_evaluation.team_id">
+                <span class="ticket-title fill-notification_title">Submit {{ getTeamById(offline_evaluation.team_id).name }} evaluation</span>
+                <span class="ticket-description fill-notification_description">
+                  You made this evaluation offline.<br>
+                  Click here to submit it.
+                </span>
+              </a>
+            </li>
+          </ul>
         </div>
-      </div>
-    </header>
-    <div class="container">
-      <nav class="menu" id="menu">
-        <a class="menu-close header-button" href="#"><i class="fa fa-bars"></i></a>
-        <a class="menu-link" href="user.html"><i class="fa fa-fw fa-user"></i> User</a>
-        <a class="menu-link" href="evaluation.html"><i class="fa fa-fw fa-pencil"></i> Evaluation</a>
-        <a class="menu-link" href="reports.html"><i class="fa fa-fw fa-line-chart"></i> Reports</a>
-      </nav>
-      <main class="content">
-        <div class="row">
-            <div class="col-xs-12">
-                <h1 class="content-title"><i class="fa fa-home"></i> Home</h1>
+        <div class="header-pane-holder" id="pane-user">
+          <a class="header-pane-close" href="#"></a>
+          <div class="header-pane user-pane">
+            <div class="user-background">
+              <i class="fa fa-user user-icon"></i> {{ user.name }}
             </div>
+            <div class="user-buttons">
+              <a class="user-btn" href="#" onclick="logout()">Log out</a>
+            </div>
+          </div>
         </div>
-      </main>
+      </header>
+      <div class="container">
+        <nav class="menu" id="menu">
+          <a class="menu-close header-button" href="#"><i class="fa fa-bars"></i></a>
+          <a class="menu-link" href="user.html"><i class="fa fa-fw fa-user"></i> User</a>
+          <a class="menu-link" href="evaluation.html"><i class="fa fa-fw fa-pencil"></i> Evaluation</a>
+          <a class="menu-link" href="reports.html"><i class="fa fa-fw fa-line-chart"></i> Reports</a>
+        </nav>
+        <main class="content">
+          <div class="row">
+              <div class="col-xs-12">
+                  <h1 class="content-title"><i class="fa fa-home"></i> Home</h1>
+              </div>
+          </div>
+        </main>
+      </div>
     </div>
   </body>
 </html>

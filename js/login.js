@@ -1,8 +1,9 @@
 function login(event) {
     event.preventDefault();
+    var form_data = new FormData(event.target);
     var data = {
-        email: getById('email').value,
-        password: getById('password').value
+        email: form_data.get('email'),
+        password: form_data.get('password')
     }
     
     api_request('auth', 'POST', data).then(function(response) {

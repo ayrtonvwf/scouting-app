@@ -1,13 +1,14 @@
 function create_account(event) {
     event.preventDefault();
+    var form_data = new FormData(event.target);
     var data = {
-        name: getById('name').value,
-        email: getById('email').value,
-        password: getById('password').value
+        name: form_data.get('name'),
+        email: form_data.get('email'),
+        password: form_data.get('password')
     }
 
-    if (data.password != getById('re_password').value) {
-        alert('The field "Password Again" must be the same as "Password"');
+    if (data.password != form_data.get('re_password')) {
+        alert('Your fields "Password" and "Password again" are not equal');
         return;
     }
     
