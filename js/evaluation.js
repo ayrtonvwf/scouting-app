@@ -22,7 +22,7 @@ function select_evaluation_team(event) {
     }
 
     app.evaluation = app.evaluations.find(function(evaluation) {
-        return evaluation.self && evaluation.team_id == team.id;
+        return parseInt(evaluation.self) && evaluation.team_id == team.id;
     });
 }
 
