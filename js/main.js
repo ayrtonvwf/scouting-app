@@ -49,7 +49,7 @@ window.onload = function () {
                         });
 
                         if (!answers.length) {
-                            return '-';
+                            return undefined;
                         }
 
                         var question = app.questions.find(function(question) {
