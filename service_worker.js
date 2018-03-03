@@ -1,5 +1,6 @@
-var cache_name = 'scouting-v0.8';
+var cache_name = 'scouting-v0.9';
 var urlsToCache = [
+    // html pages
     '.',
     './create_account.html',
     './evaluation.html',
@@ -8,11 +9,15 @@ var urlsToCache = [
     './reports.html',
     './user.html',
 
+    // browser config manifest
     './manifest.json',
     './browserconfig.xml',
 
+    // layout css
     './css/style.css',
 
+    // icons
+    './favicon.ico',
     './images/icons/icon-16x16.png',
     './images/icons/icon-32x32.png',
     './images/icons/icon-36x36.png',
@@ -35,6 +40,7 @@ var urlsToCache = [
     './images/icons/icon-384x384.png',
     './images/icons/icon-512x512.png',
     
+    // js
     './js/create_account.js',
     './js/evaluation.js',
     './js/login.js',
@@ -45,6 +51,7 @@ var urlsToCache = [
     './js/user.js',
     './js/vue.js',
     
+    // fontawesome
     './font-awesome/css/font-awesome.min.css',
     './font-awesome/fonts/fontawesome-webfont.eot',
     './font-awesome/fonts/fontawesome-webfont.svg',
@@ -66,7 +73,7 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
         caches.match(event.request).then(function(response) {
             if (response) {
-                // return response;
+                return response;
             }
             return fetch(event.request);
         })
