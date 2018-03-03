@@ -64,6 +64,8 @@
   <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
   <script src="js/vue.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/tablesort.min.js"></script>
+  <script src="js/tablesort.number.min.js"></script>
   <script src="js/reports.js"></script>
 </head>
 
@@ -182,7 +184,7 @@
                     <div class="alert alert-blue text-center">Select some teams and questions to see the report.</div>
                   </div>
                   <div class="col-sm-12" v-if="selected_teams.length && selected_questions.length">
-                    <table class="table">
+                    <table class="table" id="report_table">
                       <thead>
                         <tr>
                           <th>Team</th>

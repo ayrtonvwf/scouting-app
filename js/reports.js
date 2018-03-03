@@ -26,6 +26,8 @@ function select_question(event) {
     app.selected_questions = selected_questions;
 
     event.target.setAttribute('onchange', 'unselect_question(event)');
+
+    bind_tablesort();
 }
 
 function unselect_question(event) {
@@ -36,6 +38,8 @@ function unselect_question(event) {
     });
 
     event.target.setAttribute('onchange', 'select_question(event)');
+
+    bind_tablesort();
 }
 
 function select_team(event) {
@@ -64,6 +68,8 @@ function select_team(event) {
 
     app.selected_teams.push(team);
     input.value = '';
+
+    bind_tablesort();
 }
 
 function unselect_team(event) {
@@ -72,4 +78,14 @@ function unselect_team(event) {
     app.selected_teams = app.selected_teams.filter(function(team) {
         return team.id != team_id;
     });
+
+    bind_tablesort();
+}
+
+function bind_tablesort() {
+    var table = document.getElementById('report_table');
+
+    if (table) {
+        new Tablesort(table);
+    }
 }
