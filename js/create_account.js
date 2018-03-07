@@ -12,8 +12,14 @@ function create_account(event) {
         return;
     }
     
+    var button = event.target.querySelector('button');
+    button.setAttribute('disabled', '');
+    button.textContent = 'Creating account...';
+    
     api_request('user', 'POST', data, false).then(function(response) {
         if (response.error_code) {
+            button.textContent = 'Enter';
+            button.removeAttribute('disabled');
             alert('Cannot create user. Try again');
             return;
         }
