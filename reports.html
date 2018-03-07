@@ -61,6 +61,7 @@
   <link rel="apple-touch-icon" type="image/png" sizes="512x512" href="images/icons/icon-512x512.png">
 
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/custom.css">
   <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
   <script src="js/vue.js"></script>
   <script src="js/main.js"></script>
@@ -75,11 +76,11 @@
       <a class="header-button main-button" href="index.html">Scouting App</a>
       <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
       <div class="header-button" v-if="is_loading"><i class="fa fa-fw fa-spin fa-refresh"></i></div>
-      <a class="header-button" href="#pane-tickets" v-if="offline_evaluations.length">
+      <a class="header-button" href="#pane-tickets" v-if="offline_evaluations.length" v-cloak>
         <i class="fa fa-calendar"></i>
         <span class="header-button-label-red">{{ offline_evaluations.length }}</span>
       </a>
-      <a class="header-button" href="#pane-user">{{ user.name }}</a>
+      <a class="header-button" href="#pane-user" v-cloak>{{ user.name }}</a>
       <div class="header-pane-holder" id="pane-tickets" v-if="offline_evaluations.length">
         <a class="header-pane-close" href="#"></a>
         <ul class="header-pane ticket-pane fill-notifications">
@@ -132,7 +133,7 @@
               <div class="box-body">
                 <div class="row">
                   <div class="col-xs-12">
-                    <p v-for="question in selected_questions">{{ question.description }}</p>
+                    <p v-for="question in selected_questions" v-cloak>{{ question.description }}</p>
                     <div v-if="!selected_questions.length" class="alert alert-blue text-center">No questions selected.</div>
                     <div class="text-right">
                       <a href="#modal-change-questions" class="btn-green">Select questions</a>
@@ -160,7 +161,7 @@
                 </div>
                 <br>
                 <div class="row">
-                  <div v-for="team in selected_teams" class="col-sm-4">
+                  <div v-for="team in selected_teams" class="col-sm-4" v-cloak>
                     <p>
                       <button class="btn-red btn-small fa fa-times" type="button" onclick="unselect_team(event)" v-bind:data-id="team.id"></button>
                       {{ team.number }} - {{ team.name }}
@@ -183,7 +184,7 @@
                   <div v-if="!selected_teams.length || !selected_questions.length" class="col-md-6 col-md-push-3">
                     <div class="alert alert-blue text-center">Select some teams and questions to see the report.</div>
                   </div>
-                  <div class="col-sm-12" v-if="selected_teams.length && selected_questions.length">
+                  <div class="col-sm-12" v-if="selected_teams.length && selected_questions.length" v-cloak>
                     <table class="table" id="report_table">
                       <thead>
                         <tr>

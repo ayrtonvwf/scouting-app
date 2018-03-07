@@ -1,4 +1,4 @@
-var cache_name = 'scouting-v0.11';
+var cache_name = 'scouting-v0.12';
 var urlsToCache = [
     // html pages
     '.',
@@ -15,6 +15,7 @@ var urlsToCache = [
 
     // layout css
     './css/style.css',
+    './css/custom.css',
 
     // icons
     './favicon.ico',

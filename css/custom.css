@@ -1,0 +1,3 @@
+[v-cloak] { /* hide not rendered vue content */
+    display: none;
+}
