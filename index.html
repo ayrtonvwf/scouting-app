@@ -112,9 +112,15 @@
         </nav>
         <main class="content">
           <div class="row">
-              <div class="col-xs-12">
-                  <h1 class="content-title"><i class="fa fa-home"></i> Home</h1>
+            <div class="col-xs-12">
+              <h1 class="content-title"><i class="fa fa-home"></i> Home</h1>
+              <div class="alert alert-red text-center" v-if="!supports_service_worker" v-cloak>
+                <p><b>It will not work offline.</b></p>
+                <p>Your browser doesn't support <i>Service Workers</i>, so it can't work offline.</p>
+                <p>You can keep using it online, but we strongly recommend you to use another browser, or try to update this one.</p>
+                <p>Using a browser that supports <i>Service Workers</i>, even online, provide you a faster app and a smoother experience.</p>
               </div>
+            </div>
           </div>
         </main>
       </div>

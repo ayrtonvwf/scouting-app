@@ -5,7 +5,9 @@ var api_headers = new Headers({'Accept': 'application/json'});
 var db, app;
 
 window.onload = function () {
-    registerServiceWorker();
+    if ('serviceWorker' in navigator) {
+        registerServiceWorker();
+    }
     
     var db_init_promise = dbInit();
     if (isOnLoginPage()) {
@@ -117,7 +119,8 @@ function loadData() {
             evaluation: null,
             selected_questions: [],
             selected_teams: [],
-            reports: []
+            reports: [],
+            supports_service_worker: ('serviceWorker' in navigator)
         };
     });
 }
