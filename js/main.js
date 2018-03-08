@@ -84,7 +84,7 @@ window.onload = function () {
 }
 
 function registerServiceWorker() {
-    navigator.serviceWorker.register('service_worker.js');
+    navigator.serviceWorker.register('service_worker.js', {scope: './'});
 }
 
 function loadData() {
