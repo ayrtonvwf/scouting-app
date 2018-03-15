@@ -172,6 +172,11 @@ function loadDataToObjectStore(object_store_name, data) {
         var clear = object_store.clear();
         clear.onsuccess = function() {
             var promises = [];
+            
+            if (!(data instanceof Array)) {
+                data = [data];
+            }
+
             data.forEach(function(item) {
                 promises.push(object_store.put(item));
             });
