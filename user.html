@@ -61,6 +61,7 @@
     <link rel="apple-touch-icon" type="image/png" sizes="512x512" href="images/icons/icon-512x512.png">
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/custom.css">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
     <script src="js/vue.js"></script>
     <script src="js/main.js"></script>
@@ -72,11 +73,11 @@
         <a class="header-button main-button" href="index.html">Scouting App</a>
         <a class="header-button menu-toggle" href="#menu"><i class="fa fa-bars"></i></a>
         <div class="header-button" v-if="is_loading"><i class="fa fa-fw fa-spin fa-refresh"></i></div>
-        <a class="header-button" href="#pane-tickets" v-if="offline_evaluations.length">
+        <a class="header-button" href="#pane-tickets" v-if="offline_evaluations.length" v-cloak>
           <i class="fa fa-calendar"></i>
           <span class="header-button-label-red">{{ offline_evaluations.length }}</span>
         </a>
-        <a class="header-button" href="#pane-user">{{ user.name }}</a>
+        <a class="header-button" href="#pane-user" v-cloak>{{ user.name }}</a>
         <div class="header-pane-holder" id="pane-tickets" v-if="offline_evaluations.length">
           <a class="header-pane-close" href="#"></a>
           <ul class="header-pane ticket-pane fill-notifications">
@@ -113,7 +114,7 @@
         <main class="content">
           <div class="row">
             <div class="col-xs-12">
-              <h1 class="content-title"><i class="fa fa-user"></i> User - {{ user.name }}</h1>
+              <h1 class="content-title"><i class="fa fa-user"></i> User</h1>
             </div>
           </div>
           
